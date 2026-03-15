@@ -67,7 +67,7 @@ export const ListingRow = ({ title, listings }: ListingRowProps) => {
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-2 px-0"
+          className="flex gap-4 overflow-x-auto hide-scrollbar snap-x pb-2 px-0"
         >
           {listings.map((listing) => (
             <div
