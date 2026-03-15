@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { CategoryFilter, CategoryType } from "@/components/CategoryFilter";
-import { ListingCard } from "@/components/ListingCard";
+import { ListingRow } from "@/components/ListingRow";
 import { ListingCardSkeleton } from "@/components/ListingCardSkeleton";
 import { MobileNav } from "@/components/MobileNav";
 
@@ -30,40 +30,64 @@ const Index = () => {
     },
   });
 
+  // Group listings by location (city name - first part before comma)
+  const grouped = useMemo(() => {
+    if (!listings) return [];
+    const map = new Map<string, typeof listings>();
+    for (const listing of listings) {
+      const city = listing.location.split(",")[0].trim();
+      if (!map.has(city)) map.set(city, []);
+      map.get(city)!.push(listing);
+    }
+    // Sort by number of listings (most first)
+    return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
+  }, [listings]);
+
   return (
     <div className="min-h-screen bg-background">
       <Header onSearch={setSearchQuery} />
       <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
       {/* Main Content */}
-      <main className="max-w-[1760px] mx-auto px-6 pt-[144px] pb-24 md:pb-8">
+      <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[144px] pb-24 md:pb-8">
         {/* Results count */}
         {!isLoading && listings && (
-          <div className="mb-6 text-sm text-muted-foreground">
+          <div className="mb-4 text-sm text-muted-foreground">
             {listings.length > 0
               ? `${listings.length} vendbanime të gjetura${searchQuery ? ` në ${searchQuery}` : ""}`
               : "Asnjë rezultat nuk u gjet"}
           </div>
         )}
 
-        {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 sm:gap-x-6 gap-y-6 sm:gap-y-8">
-          {isLoading
-            ? Array.from({ length: 12 }).map((_, i) => <ListingCardSkeleton key={i} />)
-            : listings?.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  id={listing.id}
-                  title={listing.title}
-                  location={listing.location}
-                  distance={listing.distance}
-                  dates={listing.dates}
-                  price={listing.price}
-                  rating={Number(listing.rating)}
-                  images={listing.images_url || []}
-                />
-              ))}
-        </div>
+        {/* Loading state */}
+        {isLoading && (
+          <div className="space-y-10">
+            {[1, 2, 3].map((section) => (
+              <div key={section}>
+                <div className="h-6 w-48 bg-secondary rounded animate-pulse mb-4" />
+                <div className="flex gap-4 overflow-hidden">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="flex-shrink-0 w-[48%] sm:w-[220px] md:w-[240px]">
+                      <ListingCardSkeleton />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Grouped Rows by Location */}
+        {!isLoading && grouped.map(([city, cityListings]) => {
+          const categoryLabel = activeCategory !== "Të gjitha" ? activeCategory : "Vendbanime";
+          return (
+            <ListingRow
+              key={city}
+              title={`${categoryLabel} në ${city}`}
+              listings={cityListings}
+            />
+          );
+        })}
 
         {/* Empty State */}
         {!isLoading && listings?.length === 0 && (
