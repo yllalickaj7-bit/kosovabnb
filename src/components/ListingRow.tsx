@@ -61,29 +61,45 @@ export const ListingRow = ({ title, listings }: ListingRowProps) => {
         </div>
       </div>
 
-      {/* Horizontal Scroll */}
-      <div
-        ref={scrollRef}
-        onScroll={checkScroll}
-        className="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-2"
-      >
-        {listings.map((listing) => (
-          <div
-            key={listing.id}
-            className="flex-shrink-0 w-[48%] sm:w-[220px] md:w-[240px] lg:w-[260px] snap-start"
-          >
-            <ListingCard
-              id={listing.id}
-              title={listing.title}
-              location={listing.location}
-              distance={listing.distance}
-              dates={listing.dates}
-              price={listing.price}
-              rating={Number(listing.rating)}
-              images={listing.images_url || []}
-            />
+      {/* Horizontal Scroll with peek hints */}
+      <div className="relative">
+        {/* Left fade hint */}
+        {canScrollLeft && (
+          <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+        )}
+
+        {/* Right fade + arrow hint */}
+        {canScrollRight && (
+          <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center justify-end pr-1">
+            <div className="h-8 w-8 rounded-full bg-card border border-border shadow-md flex items-center justify-center">
+              <ChevronRight className="h-4 w-4 text-foreground" />
+            </div>
           </div>
-        ))}
+        )}
+
+        <div
+          ref={scrollRef}
+          onScroll={checkScroll}
+          className="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-2 px-0"
+        >
+          {listings.map((listing) => (
+            <div
+              key={listing.id}
+              className="flex-shrink-0 w-[44%] sm:w-[220px] md:w-[240px] lg:w-[260px] snap-start"
+            >
+              <ListingCard
+                id={listing.id}
+                title={listing.title}
+                location={listing.location}
+                distance={listing.distance}
+                dates={listing.dates}
+                price={listing.price}
+                rating={Number(listing.rating)}
+                images={listing.images_url || []}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
