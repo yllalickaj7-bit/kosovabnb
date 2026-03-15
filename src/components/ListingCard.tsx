@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +20,39 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
   const [isHovering, setIsHovering] = useState(false);
   const navigate = useNavigate();
 
+  // Touch swipe state
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const isSwiping = useRef(false);
+  const swipeDelta = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
+    isSwiping.current = false;
+    swipeDelta.current = 0;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+    swipeDelta.current = touchStartX.current - touchEndX.current;
+    if (Math.abs(swipeDelta.current) > 10) {
+      isSwiping.current = true;
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isSwiping.current) return;
+    const threshold = 40;
+    if (swipeDelta.current > threshold && currentImage < images.length - 1) {
+      setCurrentImage(prev => prev + 1);
+    } else if (swipeDelta.current < -threshold && currentImage > 0) {
+      setCurrentImage(prev => prev - 1);
+    }
+    isSwiping.current = false;
+    swipeDelta.current = 0;
+  }, [currentImage, images.length]);
+
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -30,28 +63,55 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
     setCurrentImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  const handleCardClick = () => {
+    if (!isSwiping.current) {
+      navigate(`/listing/${id}`);
+    }
+  };
+
+  // Show max 5 dots, centered around current
+  const maxDots = 5;
+  const totalImages = images.length;
+  let dotStart = 0;
+  let dotEnd = totalImages;
+  if (totalImages > maxDots) {
+    dotStart = Math.max(0, currentImage - Math.floor(maxDots / 2));
+    dotEnd = dotStart + maxDots;
+    if (dotEnd > totalImages) {
+      dotEnd = totalImages;
+      dotStart = dotEnd - maxDots;
+    }
+  }
+  const visibleDots = images.slice(dotStart, dotEnd);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="cursor-pointer group"
-      onClick={() => navigate(`/listing/${id}`)}
+      onClick={handleCardClick}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       {/* Image Container */}
-      <div className="relative aspect-square rounded-xl overflow-hidden bg-secondary mb-3">
+      <div
+        className="relative aspect-square rounded-xl overflow-hidden bg-secondary mb-3"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Images */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.img
             key={currentImage}
             src={images[currentImage] || "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800"}
             alt={title}
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0.6 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="w-full h-full object-cover"
+            exit={{ opacity: 0.6 }}
+            transition={{ duration: 0.15 }}
+            className="w-full h-full object-cover select-none pointer-events-none"
+            draggable={false}
             onError={(e) => {
               (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800";
             }}
@@ -78,7 +138,7 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
           </motion.div>
         </button>
 
-        {/* Carousel Controls */}
+        {/* Carousel Controls - desktop hover arrows */}
         {images.length > 1 && (
           <>
             <AnimatePresence>
@@ -106,16 +166,29 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
               )}
             </AnimatePresence>
 
-            {/* Dot Indicators */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
-              {images.map((_, i) => (
-                <div
-                  key={i}
-                  className={`rounded-full transition-all duration-200 ${
-                    i === currentImage ? "w-2 h-2 bg-white" : "w-1.5 h-1.5 bg-white/60"
-                  }`}
-                />
-              ))}
+            {/* Dot Indicators - Airbnb style with max 5 visible, scaling */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-[5px]">
+              {visibleDots.map((_, i) => {
+                const realIndex = dotStart + i;
+                const isActive = realIndex === currentImage;
+                const distFromActive = Math.abs(realIndex - currentImage);
+                const isEdge = (i === 0 && dotStart > 0) || (i === visibleDots.length - 1 && dotEnd < totalImages);
+                
+                let size = isActive ? 7 : distFromActive === 1 ? 5.5 : 4.5;
+                if (isEdge && !isActive) size = 3.5;
+
+                return (
+                  <div
+                    key={realIndex}
+                    className="rounded-full transition-all duration-200"
+                    style={{
+                      width: size,
+                      height: size,
+                      backgroundColor: isActive ? "white" : "rgba(255,255,255,0.5)",
+                    }}
+                  />
+                );
+              })}
             </div>
           </>
         )}
