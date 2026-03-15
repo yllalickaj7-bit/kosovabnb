@@ -28,6 +28,8 @@ export type Database = {
           host_name: string | null
           id: string
           images_url: string[]
+          lat: number | null
+          lng: number | null
           location: string
           price: number
           rating: number
@@ -47,6 +49,8 @@ export type Database = {
           host_name?: string | null
           id?: string
           images_url?: string[]
+          lat?: number | null
+          lng?: number | null
           location: string
           price: number
           rating?: number
@@ -66,6 +70,8 @@ export type Database = {
           host_name?: string | null
           id?: string
           images_url?: string[]
+          lat?: number | null
+          lng?: number | null
           location?: string
           price?: number
           rating?: number
