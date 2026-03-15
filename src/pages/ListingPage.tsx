@@ -7,6 +7,7 @@ import { Star, ArrowLeft, Heart, Share, Wifi, Utensils, Car, Wind, Users, Bed, B
 import { Header } from "@/components/Header";
 import { BookingWidget } from "@/components/BookingWidget";
 import { MobileNav } from "@/components/MobileNav";
+import { LeafletMap } from "@/components/LeafletMap";
 
 const amenityIcons: Record<string, React.ElementType> = {
   "Wi-Fi": Wifi,
@@ -194,7 +195,7 @@ const ListingPage = () => {
 
             {/* Amenities */}
             {listing.amenities && listing.amenities.length > 0 && (
-              <div className="py-6">
+              <div className="py-6 border-b border-border">
                 <h3 className="text-lg font-semibold mb-4">Çfarë ofrohet</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {listing.amenities.map((amenity) => {
@@ -207,6 +208,15 @@ const ListingPage = () => {
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* Map */}
+            {(listing as any).lat && (listing as any).lng && (
+              <div className="py-6">
+                <h3 className="text-lg font-semibold mb-4">Ku do të jeni</h3>
+                <LeafletMap lat={(listing as any).lat} lng={(listing as any).lng} title={listing.title} />
+                <p className="text-sm text-muted-foreground mt-2">{listing.location}</p>
               </div>
             )}
           </div>
