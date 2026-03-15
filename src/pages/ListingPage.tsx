@@ -7,6 +7,7 @@ import { Star, ArrowLeft, Heart, Share, Wifi, Utensils, Car, Wind, Users, Bed, B
 import { Header } from "@/components/Header";
 import { BookingWidget } from "@/components/BookingWidget";
 import { MobileNav } from "@/components/MobileNav";
+import { LeafletMap } from "@/components/LeafletMap";
 
 const amenityIcons: Record<string, React.ElementType> = {
   "Wi-Fi": Wifi,
