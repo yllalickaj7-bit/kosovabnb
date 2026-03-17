@@ -98,7 +98,7 @@ const ExperiencesPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[144px] pb-24 md:pb-8">
+      <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[140px] sm:pt-[100px] pb-24 md:pb-8">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
             {t("experiencesTitle")}
