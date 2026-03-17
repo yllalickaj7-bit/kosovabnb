@@ -20,7 +20,7 @@ export const MobileNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-card border-t border-border">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-card border-t border-border" aria-label="Navigimi kryesor në mobil">
       <div className="flex items-center justify-around py-2">
         {items.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;

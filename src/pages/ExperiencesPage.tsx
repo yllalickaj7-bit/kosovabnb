@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { MobileNav } from "@/components/MobileNav";
 import { ListingRow } from "@/components/ListingRow";
+import { SEOHead, createBreadcrumbSchema } from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const experienceListings = [
@@ -95,16 +96,27 @@ const experiencesByCity = [
 const ExperiencesPage = () => {
   const { t } = useLanguage();
 
+  const breadcrumbs = [
+    { name: "KosovaBnB", url: "https://kosovabnb.lovable.app/" },
+    { name: "Eksperienca", url: "https://kosovabnb.lovable.app/experiences" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Eksperienca në Kosovë – Aktivitete Unike | KosovaBnB"
+        description="Zbulo eksperienca unike në Kosovë: hiking, kuzhinë tradicionale, wine tasting, tura kulturore dhe më shumë. Rezervo tani në KosovaBnB."
+        canonical="https://kosovabnb.lovable.app/experiences"
+        jsonLd={createBreadcrumbSchema(breadcrumbs)}
+      />
       <Header />
       <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[140px] sm:pt-[100px] pb-24 md:pb-8">
-        <div className="mb-6">
+        <section className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
             {t("experiencesTitle")}
           </h1>
           <p className="text-muted-foreground text-sm">{t("experiencesDesc")}</p>
-        </div>
+        </section>
 
         {experiencesByCity.map(({ city, listings }) => (
           <ListingRow

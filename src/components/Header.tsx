@@ -66,7 +66,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
 
   return (
     <>
-      <header className="glass fixed top-0 left-0 right-0 z-50 h-20">
+      <header className="glass fixed top-0 left-0 right-0 z-50 h-20" role="banner">
         <div className="max-w-[1760px] mx-auto px-6 h-full flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex-shrink-0">
@@ -203,7 +203,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
       </header>
 
       {/* Mobile Tab Bar - fixed below header */}
-      <div className="sm:hidden glass fixed top-20 left-0 right-0 z-40">
+      <nav className="sm:hidden glass fixed top-20 left-0 right-0 z-40" aria-label="Navigimi kryesor">
         <div className="flex items-center justify-center gap-2 px-4 py-2">
           {tabs.map((tab) => (
             <button
@@ -224,7 +224,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
             </button>
           ))}
         </div>
-      </div>
+      </nav>
 
       <AnimatePresence>
         {searchOpen && (

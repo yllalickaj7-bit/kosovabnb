@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { MobileNav } from "@/components/MobileNav";
 import { ListingRow } from "@/components/ListingRow";
+import { SEOHead, createBreadcrumbSchema } from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const serviceListings = [
@@ -93,16 +94,27 @@ const servicesByCity = [
 const ServicesPage = () => {
   const { t } = useLanguage();
 
+  const breadcrumbs = [
+    { name: "KosovaBnB", url: "https://kosovabnb.lovable.app/" },
+    { name: "Shërbime", url: "https://kosovabnb.lovable.app/services" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Shërbime Turistike në Kosovë | KosovaBnB"
+        description="Gjej shërbime profesionale për udhëtimin tënd në Kosovë: transfer aeroporti, guidë turistike, rent-a-car, spa dhe më shumë."
+        canonical="https://kosovabnb.lovable.app/services"
+        jsonLd={createBreadcrumbSchema(breadcrumbs)}
+      />
       <Header />
       <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[140px] sm:pt-[100px] pb-24 md:pb-8">
-        <div className="mb-6">
+        <section className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
             {t("servicesTitle")}
           </h1>
           <p className="text-muted-foreground text-sm">{t("servicesDesc")}</p>
-        </div>
+        </section>
 
         {servicesByCity.map(({ city, listings }) => (
           <ListingRow
