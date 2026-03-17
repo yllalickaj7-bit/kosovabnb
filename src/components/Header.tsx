@@ -66,7 +66,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
 
   return (
     <>
-      <header className="glass fixed top-0 left-0 right-0 z-50 h-20">
+      <header className="glass fixed top-0 left-0 right-0 z-50 h-20" role="banner">
         <div className="max-w-[1760px] mx-auto px-6 h-full flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex-shrink-0">
