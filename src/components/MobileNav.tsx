@@ -1,44 +1,43 @@
-import { Home, Heart, LogIn } from "lucide-react";
+import { Home, Heart, LogIn, User, Compass, Briefcase } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const MobileNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { t } = useLanguage();
 
   const items = [
-    { icon: Home, label: "Eksploro", path: "/", active: true },
-    { icon: Heart, label: "Dëshirat", path: "/wishlists" },
-    { icon: LogIn, label: "Hyr", path: "/login" },
+    { icon: Home, label: t("homes"), path: "/" },
+    { icon: Compass, label: t("experiences"), path: "/experiences" },
+    { icon: Briefcase, label: t("services"), path: "/services" },
+    { icon: Heart, label: t("wishlist"), path: "/wishlists" },
+    ...(user
+      ? [{ icon: User, label: "Profili", path: "/profile" }]
+      : [{ icon: LogIn, label: t("login"), path: "/auth" }]),
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-border">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-card border-t border-border">
       <div className="flex items-center justify-around py-2">
         {items.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
-          const isExplore = label === "Eksploro";
           return (
             <button
               key={label}
               onClick={() => navigate(path)}
-              className="flex flex-col items-center gap-0.5 py-1 px-4 min-w-0"
+              className="flex flex-col items-center gap-0.5 py-1 px-2 min-w-0"
             >
               <Icon
-                className={`h-6 w-6 transition-colors ${
-                  isActive && isExplore
-                    ? "text-primary"
-                    : isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground"
+                className={`h-5 w-5 transition-colors ${
+                  isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               />
               <span
-                className={`text-[10px] font-medium transition-colors ${
-                  isActive && isExplore
-                    ? "text-primary"
-                    : isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground"
+                className={`text-[9px] font-medium transition-colors ${
+                  isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 {label}
