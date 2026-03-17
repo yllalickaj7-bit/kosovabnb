@@ -6,6 +6,7 @@ import { CategoryFilter, CategoryType } from "@/components/CategoryFilter";
 import { ListingRow } from "@/components/ListingRow";
 import { ListingCardSkeleton } from "@/components/ListingCardSkeleton";
 import { MobileNav } from "@/components/MobileNav";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryType>("Të gjitha");
