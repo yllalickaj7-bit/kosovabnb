@@ -210,7 +210,7 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
         <p className="text-sm text-muted-foreground">{dates}</p>
         <p className="text-sm text-foreground mt-1">
           <span className="font-semibold">€{price}</span>
-          <span className="text-muted-foreground font-normal"> nata</span>
+          <span className="text-muted-foreground font-normal"> / natë</span>
         </p>
       </div>
     </motion.div>
