@@ -105,13 +105,16 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
           <motion.img
             key={currentImage}
             src={images[currentImage] || "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800"}
-            alt={title}
+            alt={`${title} - ${location}`}
             initial={{ opacity: 0.6 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0.6 }}
             transition={{ duration: 0.15 }}
             className="w-full h-full object-cover select-none pointer-events-none"
             draggable={false}
+            loading="lazy"
+            width={400}
+            height={400}
             onError={(e) => {
               (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800";
             }}

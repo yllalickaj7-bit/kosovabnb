@@ -6,6 +6,7 @@ import { CategoryFilter, CategoryType } from "@/components/CategoryFilter";
 import { ListingRow } from "@/components/ListingRow";
 import { ListingCardSkeleton } from "@/components/ListingCardSkeleton";
 import { MobileNav } from "@/components/MobileNav";
+import { SEOHead, createOrganizationSchema, createWebSiteSchema, createLocalBusinessSchema } from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
@@ -32,7 +33,6 @@ const Index = () => {
     },
   });
 
-  // Group listings by location (city name - first part before comma)
   const grouped = useMemo(() => {
     if (!listings) return [];
     const map = new Map<string, typeof listings>();
@@ -41,29 +41,41 @@ const Index = () => {
       if (!map.has(city)) map.set(city, []);
       map.get(city)!.push(listing);
     }
-    // Sort by number of listings (most first)
     return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
   }, [listings]);
 
+  const pageTitle = searchQuery
+    ? `Vendbanime në ${searchQuery} | KosovaBnB`
+    : "KosovaBnB – Vendbanime, Eksperienca & Shërbime në Kosovë";
+
+  const pageDesc = searchQuery
+    ? `Gjej vendbanime të mrekullueshme në ${searchQuery}, Kosovë. Rezervo apartamente, vila, hotele me çmimet më të mira.`
+    : "Platforma kryesore për rezervimin e vendbanimeve, eksperiencave dhe shërbimeve turistike në Kosovë. Gjej vendbanimin ideal për pushimin tënd.";
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={pageTitle}
+        description={pageDesc}
+        canonical={`https://kosovabnb.lovable.app/${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`}
+        jsonLd={[createOrganizationSchema(), createWebSiteSchema(), createLocalBusinessSchema()]}
+      />
       <Header onSearch={setSearchQuery} />
       <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
-      {/* Main Content */}
       <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[200px] sm:pt-[144px] pb-24 md:pb-8">
         {/* Results count */}
         {!isLoading && listings && (
-          <div className="mb-4 text-sm text-muted-foreground">
+          <p className="mb-4 text-sm text-muted-foreground" aria-live="polite">
             {listings.length > 0
               ? `${listings.length} vendbanime të gjetura${searchQuery ? ` në ${searchQuery}` : ""}`
               : "Asnjë rezultat nuk u gjet"}
-          </div>
+          </p>
         )}
 
         {/* Loading state */}
         {isLoading && (
-          <div className="space-y-10">
+          <div className="space-y-10" aria-busy="true" aria-label="Duke u ngarkuar">
             {[1, 2, 3].map((section) => (
               <div key={section}>
                 <div className="h-6 w-48 bg-secondary rounded animate-pulse mb-4" />
@@ -94,8 +106,8 @@ const Index = () => {
         {/* Empty State */}
         {!isLoading && listings?.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="text-6xl mb-4">🏔️</div>
-            <h3 className="text-xl font-semibold mb-2">Asnjë vendbanim nuk u gjet</h3>
+            <div className="text-6xl mb-4" aria-hidden="true">🏔️</div>
+            <h2 className="text-xl font-semibold mb-2">Asnjë vendbanim nuk u gjet</h2>
             <p className="text-muted-foreground mb-6 max-w-xs">
               Provo të ndryshosh filtrat ose të kërkosh destinacion tjetër në Kosovë
             </p>

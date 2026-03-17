@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Lock, ArrowLeft } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,14 +40,20 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <button
-          onClick={() => navigate("/")}
+      <SEOHead
+        title={isLogin ? "Hyr në llogari | KosovaBnB" : "Krijo llogari | KosovaBnB"}
+        description="Hyr në llogarinë tënde ose krijo një llogari të re në KosovaBnB për të rezervuar vendbanime në Kosovë."
+        canonical="https://kosovabnb.lovable.app/auth"
+        noindex
+      />
+      <main className="w-full max-w-md">
+        <a
+          href="/"
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           KosovaBnB
-        </button>
+        </a>
 
         <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
           <h1 className="text-2xl font-bold text-card-foreground mb-2">
@@ -64,18 +71,19 @@ const AuthPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" aria-hidden="true" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t("email")}
+                autoComplete="email"
                 className="w-full pl-11 pr-4 py-3 border border-input rounded-xl bg-background text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
               />
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" aria-hidden="true" />
               <input
                 type="password"
                 required
@@ -83,6 +91,7 @@ const AuthPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t("password")}
+                autoComplete={isLogin ? "current-password" : "new-password"}
                 className="w-full pl-11 pr-4 py-3 border border-input rounded-xl bg-background text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
               />
             </div>
@@ -95,7 +104,7 @@ const AuthPage = () => {
             </button>
           </form>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
