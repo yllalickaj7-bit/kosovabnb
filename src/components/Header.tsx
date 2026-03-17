@@ -202,7 +202,30 @@ export const Header = ({ onSearch }: HeaderProps) => {
         </div>
       </header>
 
-      {/* Search Overlay */}
+      {/* Mobile Tab Bar - fixed below header */}
+      <div className="sm:hidden glass fixed top-20 left-0 right-0 z-40">
+        <div className="flex items-center justify-center gap-2 px-4 py-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => navigate(tab.path)}
+              className={`relative flex-1 py-2.5 rounded-full text-sm font-medium transition-all text-center ${
+                activeTab === tab.key
+                  ? "bg-card text-foreground shadow-sm border border-border"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.isNew && (
+                <span className="absolute -top-2 left-1/2 translate-x-2 px-1.5 py-0.5 rounded-full gradient-brand text-white text-[8px] font-bold leading-none">
+                  NEW
+                </span>
+              )}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <AnimatePresence>
         {searchOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] bg-foreground/20 backdrop-blur-sm">
