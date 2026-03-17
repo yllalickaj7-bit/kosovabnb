@@ -224,7 +224,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
             </button>
           ))}
         </div>
-      </div>
+      </nav>
 
       <AnimatePresence>
         {searchOpen && (
