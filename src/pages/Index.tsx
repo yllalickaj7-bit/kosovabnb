@@ -51,7 +51,7 @@ const Index = () => {
       <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
       {/* Main Content */}
-      <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[144px] pb-24 md:pb-8">
+      <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[200px] sm:pt-[144px] pb-24 md:pb-8">
         {/* Results count */}
         {!isLoading && listings && (
           <div className="mb-4 text-sm text-muted-foreground">
