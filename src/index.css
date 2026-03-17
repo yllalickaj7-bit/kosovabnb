@@ -116,6 +116,11 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
+  .dark .glass {
+    background: rgba(23, 23, 23, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   .card-shadow {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   }

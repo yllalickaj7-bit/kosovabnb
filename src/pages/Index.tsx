@@ -11,6 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryType>("Të gjitha");
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useLanguage();
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ["listings", activeCategory, searchQuery],
