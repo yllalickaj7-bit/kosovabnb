@@ -28,7 +28,7 @@ export const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFil
   };
 
   return (
-    <div className="glass fixed top-20 left-0 right-0 z-40 border-b border-border/60">
+    <div className="glass fixed top-[128px] sm:top-20 left-0 right-0 z-40 border-b border-border/60">
       <div className="max-w-[1760px] mx-auto px-6 flex items-center gap-3 h-16">
         {/* Scroll Left */}
         <button
