@@ -203,7 +203,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
       </header>
 
       {/* Mobile Tab Bar - fixed below header */}
-      <div className="sm:hidden glass fixed top-20 left-0 right-0 z-40">
+      <nav className="sm:hidden glass fixed top-20 left-0 right-0 z-40" aria-label="Navigimi kryesor">
         <div className="flex items-center justify-center gap-2 px-4 py-2">
           {tabs.map((tab) => (
             <button
