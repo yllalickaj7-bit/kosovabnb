@@ -1,0 +1,67 @@
+erDiagram
+    USERS ||--o| PROFILES : has
+    USERS ||--o{ USER_ROLES : has
+    USERS ||--o{ LISTINGS : owns
+    USERS ||--o{ BOOKINGS : makes
+    LISTINGS ||--|{ ROOMS : contains
+    LISTINGS ||--o{ BOOKINGS : receives
+    LISTINGS ||--o{ PRICING_RULES : "has (or global)"
+    LISTINGS ||--o{ REVIEWS : gets
+    ROOMS ||--o{ BOOKINGS : reserved_in
+    ROOMS ||--o{ PRICE_RECOMMENDATIONS : gets
+    BOOKINGS ||--o{ PAYMENTS : paid_by
+    BOOKINGS ||--o| REVIEWS : reviewed_in
+    USERS ||--o{ CHAT_CONVERSATIONS : starts
+    LISTINGS ||--o{ CHAT_CONVERSATIONS : "about"
+    CHAT_CONVERSATIONS ||--|{ CHAT_MESSAGES : contains
+
+    LISTINGS { uuid id PK
+      text title
+      text type
+      int price
+      uuid owner_id FK }
+    ROOMS { uuid id PK
+      uuid listing_id FK
+      text room_type
+      int capacity
+      numeric base_price
+      numeric min_price
+      numeric max_price }
+    BOOKINGS { uuid id PK
+      uuid room_id FK
+      uuid guest_id FK
+      date check_in
+      date check_out
+      numeric total_price
+      enum status }
+    PAYMENTS { uuid id PK
+      uuid booking_id FK
+      numeric amount
+      enum status
+      char card_last4
+      bool is_simulated }
+    PRICING_RULES { uuid id PK
+      uuid listing_id FK
+      text kind
+      numeric multiplier }
+    PRICE_RECOMMENDATIONS { uuid id PK
+      uuid room_id FK
+      date stay_date
+      numeric recommended_price
+      jsonb factors
+      enum status }
+    CHAT_CONVERSATIONS { uuid id PK
+      uuid user_id FK
+      uuid listing_id FK }
+    CHAT_MESSAGES { uuid id PK
+      uuid conversation_id FK
+      text role
+      text content
+      jsonb tool_payload }
+    REVIEWS { uuid id PK
+      uuid booking_id FK
+      int rating }
+    PROFILES { uuid id PK
+      text full_name }
+    USER_ROLES { uuid user_id FK
+      enum role }
