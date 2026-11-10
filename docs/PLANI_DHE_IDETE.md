@@ -78,7 +78,7 @@ supabase db push
 #    insert into public.user_roles (user_id, role) values ('<USER_ID>', 'admin');
 
 # 3. Chatbot dhe shpjegimet AI
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...   # ose OPENAI_API_KEY=sk-...  (njëri mjafton)
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...   # ose OPENAI_API_KEY=sk-...  ose GROQ_API_KEY=gsk_... (FALAS, console.groq.com)  (njëri mjafton)
 supabase secrets set OPENAI_MODEL=gpt-4o-mini LLM_PROVIDER=openai   # opsionale, vetëm nëse përdor OpenAI
 supabase secrets set ANTHROPIC_MODEL=claude-haiku-5-5 SITE_URL=https://<domeni-yt>   # opsionale
 supabase functions deploy chat
