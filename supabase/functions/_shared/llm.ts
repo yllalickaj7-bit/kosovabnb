@@ -1,21 +1,31 @@
 // Adapter i vetëm për modelet e gjuhës: Claude (Anthropic) ose OpenAI. Zgjedhja:
-//   LLM_PROVIDER=anthropic|openai  (opsional), përndryshe: ANTHROPIC_API_KEY → anthropic, përndryshe OPENAI_API_KEY → openai.
-// Modelet: ANTHROPIC_MODEL (parazgjedhje claude-haiku-5-5), OPENAI_MODEL (parazgjedhje gpt-4o-mini).
+//   LLM_PROVIDER=anthropic|openai  (opsional), përndryshe: ANTHROPIC_API_KEY → anthropic, OPENAI_API_KEY → openai, GROQ_API_KEY → groq (FALAS, API e përputhshme me OpenAI).
+// Modelet: ANTHROPIC_MODEL (claude-haiku-5-5), OPENAI_MODEL (gpt-4o-mini), GROQ_MODEL (llama-3.3-70b-versatile). OPENAI_BASE_URL për çdo ofrues tjetër të përputhshëm me OpenAI.
 // Brenda funksioneve biseda mbahet në formatin e blloqeve të Anthropic (text/tool_use/tool_result); për OpenAI përkthehet këtu.
 // deno-lint-ignore no-explicit-any
 type Json = any;
 
 export const llmProvider = (): "anthropic" | "openai" | null => {
   const pref = Deno.env.get("LLM_PROVIDER");
-  const a = !!Deno.env.get("ANTHROPIC_API_KEY"), o = !!Deno.env.get("OPENAI_API_KEY");
-  if (pref === "openai" && o) return "openai";
+  const a = !!Deno.env.get("ANTHROPIC_API_KEY"), o = !!Deno.env.get("OPENAI_API_KEY"), g = !!Deno.env.get("GROQ_API_KEY");
+  if (pref === "openai" && (o || g)) return "openai";
   if (pref === "anthropic" && a) return "anthropic";
   if (a) return "anthropic";
-  if (o) return "openai";
+  if (o || g) return "openai";
   return null;
 };
 
-export const llmMissingMessage = "Mungon çelësi i AI: vendos ANTHROPIC_API_KEY ose OPENAI_API_KEY te Supabase Secrets.";
+// Çelësi, adresa dhe modeli për ofruesit e përputhshëm me OpenAI (OpenAI vetë ose Groq falas)
+const openAiConfig = () => {
+  const groq = Deno.env.get("GROQ_API_KEY");
+  const openai = Deno.env.get("OPENAI_API_KEY");
+  if (openai && Deno.env.get("LLM_PROVIDER") !== "groq") {
+    return { key: openai, base: (Deno.env.get("OPENAI_BASE_URL") ?? "https://api.openai.com/v1").replace(/\/$/, ""), model: Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini" };
+  }
+  return { key: groq!, base: "https://api.groq.com/openai/v1", model: Deno.env.get("GROQ_MODEL") ?? "llama-3.3-70b-versatile" };
+};
+
+export const llmMissingMessage = "Mungon çelësi i AI: vendos GROQ_API_KEY (falas), OPENAI_API_KEY ose ANTHROPIC_API_KEY te Supabase Secrets.";
 
 export interface LlmResult { ok: boolean; status: number; error?: string; content: Json[]; stop_reason: string }
 
@@ -55,11 +65,12 @@ export const callLlm = async (opts: { system: string; messages: Json[]; tools?: 
     return { ok: true, status: 200, content: d.content ?? [], stop_reason: d.stop_reason };
   }
 
-  const body: Json = { model: Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini", max_tokens: maxTokens, messages: toOpenAiMessages(opts.system, opts.messages) };
+  const cfg = openAiConfig();
+  const body: Json = { model: cfg.model, max_tokens: maxTokens, messages: toOpenAiMessages(opts.system, opts.messages) };
   if (opts.tools?.length) body.tools = opts.tools.map((t: Json) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch(`${cfg.base}/chat/completions`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`, "content-type": "application/json" },
+    headers: { Authorization: `Bearer ${cfg.key}`, "content-type": "application/json" },
     body: JSON.stringify(body),
   });
   if (!res.ok) return { ok: false, status: res.status, error: await res.text(), content: [], stop_reason: "error" };
