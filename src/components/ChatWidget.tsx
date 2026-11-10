@@ -110,15 +110,24 @@ export const ChatWidget = () => {
       if (error || !data?.reply) throw error ?? new Error("empty");
       setConversationId(data.conversation_id ?? undefined);
       setMessages([...next, { role: "assistant", content: data.reply }]);
-    } catch {
-      // Claude/edge function nuk është i vendosur: asistenti lokal kërkon direkt te pronat
+    } catch (err) {
+      // Arsyeja teknike e dështimit (për diagnostikim): statusi dhe mesazhi i funksionit, nëse ka
+      let reason = (err as Error)?.message ?? "pa përgjigje";
+      try {
+        const ctx = (err as { context?: Response })?.context;
+        if (ctx) {
+          const body = await ctx.clone().json().catch(() => null);
+          reason = `HTTP ${ctx.status}${body?.error ? `: ${body.error}` : ""}`;
+        }
+      } catch { /* mbetet mesazhi bazë */ }
+      // AI/edge function nuk është aktiv: asistenti lokal kërkon direkt te pronat
       try {
         const { data } = await supabase.from("listings").select("id,title,type,price,location,guests,rating").limit(200);
         const all = (data ?? []) as ListingLite[];
         const cities = Array.from(new Set(all.map((l) => l.location.split(",")[0].trim())));
         const q = parseQuery(text, cities);
         const found = localSearch(all, q);
-        const note = lang === "en" ? "\n\n(Basic mode: full AI is not enabled yet.)" : "\n\n(Mënyra bazë: AI i plotë ende nuk është aktiv.)";
+        const note = lang === "en" ? `\n\n(Basic mode: full AI is not enabled yet. Technical reason: ${reason})` : `\n\n(Mënyra bazë: AI i plotë ende nuk është aktiv. Arsyeja teknike: ${reason})`;
         setMessages([...next, { role: "assistant", content: localReply(found, q, lang === "en" ? "en" : "sq") + note }]);
       } catch {
         setMessages([...next, { role: "assistant", content: c.error }]);
@@ -133,7 +142,7 @@ export const ChatWidget = () => {
         <button
           onClick={() => setOpen(true)}
           aria-label={c.open}
-          className="fixed right-4 bottom-20 md:bottom-6 z-50 h-14 w-14 rounded-full gradient-brand text-white shadow-xl flex items-center justify-center hover:opacity-90"
+          className="fixed right-4 bottom-20 md:bottom-6 z-50 h-14 w-14 rounded-full gradient-brand text-white shadow-2xl ring-4 ring-white/60 flex items-center justify-center hover:scale-105 transition-transform"
         >
           <Bot className="h-6 w-6" />
         </button>
@@ -142,7 +151,7 @@ export const ChatWidget = () => {
       {open && (
         <section
           aria-label={c.title}
-          className="fixed z-50 right-0 bottom-0 md:right-6 md:bottom-6 w-full md:w-96 h-[75vh] md:h-[32rem] max-h-[100dvh] bg-card border border-border md:rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          className="fixed z-50 right-0 bottom-0 md:right-6 md:bottom-6 w-full md:w-96 h-[75vh] md:h-[32rem] max-h-[100dvh] bg-card border border-border md:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         >
           <header className="flex items-center justify-between px-4 py-3 gradient-brand text-white">
             <span className="flex items-center gap-2 font-semibold text-sm"><Bot className="h-4 w-4" /> {c.title}</span>
@@ -153,6 +162,16 @@ export const ChatWidget = () => {
 
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm" aria-live="polite">
             <div className="bg-secondary rounded-2xl rounded-tl-sm px-3 py-2 max-w-[85%]">{c.welcome}</div>
+            {messages.length === 0 && (
+              <div className="flex flex-wrap gap-2">
+                {(lang === "en"
+                  ? ["Villa for 6 in Prizren", "Apartment under €60", "Hotel in Pristina"]
+                  : ["Vilë për 6 vetë në Prizren", "Apartament nën 60€", "Hotel në Prishtinë"]
+                ).map((q) => (
+                  <button key={q} type="button" onClick={() => setInput(q)} className="text-xs border border-border rounded-full px-3 py-1.5 hover:bg-secondary">{q}</button>
+                ))}
+              </div>
+            )}
             {messages.map((m, i) => (
               <div
                 key={i}
