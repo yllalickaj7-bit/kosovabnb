@@ -112,6 +112,12 @@ export const Header = ({ onSearch }: HeaderProps) => {
           {/* Right Nav */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
+              onClick={() => navigate("/planner")}
+              className="hidden lg:flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-semibold text-white gradient-brand hover:opacity-90 transition-opacity"
+            >
+              ✨ Planifikues AI
+            </button>
+            <button
               onClick={() => navigate("/become-host")}
               className="hidden md:flex items-center h-10 px-4 rounded-full text-sm font-medium text-foreground hover:bg-secondary transition-colors"
             >
@@ -157,6 +163,10 @@ export const Header = ({ onSearch }: HeaderProps) => {
                     transition={{ duration: 0.15 }}
                     className="absolute right-0 top-14 w-56 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50"
                   >
+                    <button onClick={() => { navigate("/planner"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">✨ Planifikuesi i udhëtimit (AI)</button>
+                    <button onClick={() => { navigate("/simulator"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">📈 Simulatori i çmimeve</button>
+                    <button onClick={() => { navigate("/host/revenue"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">💶 Revenue Manager</button>
+                    <div className="border-t border-border" />
                     {user ? (
                       <>
                         <div className="px-4 py-3 border-b border-border">

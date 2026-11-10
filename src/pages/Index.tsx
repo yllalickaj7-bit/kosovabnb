@@ -7,6 +7,7 @@ import { ListingRow } from "@/components/ListingRow";
 import { ListingCardSkeleton } from "@/components/ListingCardSkeleton";
 import { MobileNav } from "@/components/MobileNav";
 import { SEOHead, createOrganizationSchema, createWebSiteSchema, createLocalBusinessSchema } from "@/components/SEOHead";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
@@ -64,6 +65,28 @@ const Index = () => {
       <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
       <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[200px] sm:pt-[144px] pb-24 md:pb-8">
+        {/* AI: hyrja e re e kryefaqes */}
+        <section className="mb-8 rounded-3xl p-6 sm:p-8 text-white" style={{ background: "var(--gradient-brand)" }} aria-label="Asistenti AI">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Gjej qëndrimin e përsosur në Kosovë, thjesht duke e përshkruar</h1>
+          <p className="opacity-90 mb-4 max-w-2xl">Shkruaj çfarë dëshiron dhe asistenti kërkon, krahason çmimet dhe të çon te rezervimi.</p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const v = (new FormData(e.currentTarget).get("q") as string) ?? "";
+              window.dispatchEvent(new CustomEvent("kbnb:open-chat", { detail: v }));
+            }}
+            className="flex gap-2 max-w-2xl"
+          >
+            <input name="q" maxLength={200} placeholder="p.sh. vilë për 6 vetë në Prizren nën 150€" className="flex-1 rounded-full px-5 py-3 text-foreground bg-white outline-none" />
+            <button className="rounded-full px-6 py-3 font-semibold bg-black/80 hover:bg-black">Pyet AI</button>
+          </form>
+          <div className="flex flex-wrap gap-2 mt-4 text-sm">
+            <Link to="/planner" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">✨ Planifiko udhëtimin me AI</Link>
+            <Link to="/simulator" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">📈 Simulatori i çmimeve</Link>
+            <Link to="/host/revenue" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">💶 Revenue Manager</Link>
+          </div>
+        </section>
+
         {/* Results count */}
         {!isLoading && listings && (
           <p className="mb-4 text-sm text-muted-foreground" aria-live="polite">

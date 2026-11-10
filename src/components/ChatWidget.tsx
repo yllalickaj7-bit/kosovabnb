@@ -3,6 +3,7 @@ import { matchPath, useLocation } from "react-router-dom";
 import { Bot, Loader2, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ListingLite, parseQuery, reply as localReply, search as localSearch } from "@/lib/local-assistant";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -44,11 +45,11 @@ const sessionId = (() => {
 })();
 
 // Lidhjet bëhen klikueshme vetëm për domenin e vet dhe shtigjet e brendshme
-const LINK_RE = /(https?:\/\/[^\s)]+|\/checkout\/[0-9a-f-]{36})/gi;
+const LINK_RE = /(https?:\/\/[^\s)]+|\/(?:checkout|listing)\/[0-9a-f-]{36})/gi;
 const Linkified = ({ text }: { text: string }) => (
   <>
     {text.split(LINK_RE).map((part, i) => {
-      if (!/^(https?:\/\/|\/checkout\/)/i.test(part)) return <span key={i}>{part}</span>;
+      if (!/^(https?:\/\/|\/checkout\/|\/listing\/)/i.test(part)) return <span key={i}>{part}</span>;
       const internal = part.startsWith("/") || part.startsWith(window.location.origin);
       return internal ? (
         <a key={i} href={part} className="underline font-medium break-all">{part}</a>
@@ -71,6 +72,16 @@ export const ChatWidget = () => {
   const endRef = useRef<HTMLDivElement>(null);
 
   const listingId = matchPath("/listing/:id", location.pathname)?.params.id;
+
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      setOpen(true);
+      const q = (e as CustomEvent<string>).detail;
+      if (q) setInput(q);
+    };
+    window.addEventListener("kbnb:open-chat", onOpen);
+    return () => window.removeEventListener("kbnb:open-chat", onOpen);
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,7 +111,18 @@ export const ChatWidget = () => {
       setConversationId(data.conversation_id ?? undefined);
       setMessages([...next, { role: "assistant", content: data.reply }]);
     } catch {
-      setMessages([...next, { role: "assistant", content: c.error }]);
+      // Claude/edge function nuk është i vendosur: asistenti lokal kërkon direkt te pronat
+      try {
+        const { data } = await supabase.from("listings").select("id,title,type,price,location,guests,rating").limit(200);
+        const all = (data ?? []) as ListingLite[];
+        const cities = Array.from(new Set(all.map((l) => l.location.split(",")[0].trim())));
+        const q = parseQuery(text, cities);
+        const found = localSearch(all, q);
+        const note = lang === "en" ? "\n\n(Basic mode: full AI is not enabled yet.)" : "\n\n(Mënyra bazë: AI i plotë ende nuk është aktiv.)";
+        setMessages([...next, { role: "assistant", content: localReply(found, q, lang === "en" ? "en" : "sq") + note }]);
+      } catch {
+        setMessages([...next, { role: "assistant", content: c.error }]);
+      }
     }
     setLoading(false);
   };
