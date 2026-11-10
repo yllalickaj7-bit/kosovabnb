@@ -75,9 +75,9 @@ export const Header = ({ onSearch }: HeaderProps) => {
                 <path d="M16 1C8.82 1 3 6.82 3 14c0 3.5 1.35 6.68 3.56 9.06L16 31l9.44-7.94C27.65 20.68 29 17.5 29 14c0-7.18-5.82-13-13-13z" fill="url(#brandGrad)" />
                 <defs>
                   <linearGradient id="brandGrad" x1="3" y1="1" x2="29" y2="31">
-                    <stop stopColor="#E61E4D" />
-                    <stop offset="0.5" stopColor="#E31C5F" />
-                    <stop offset="1" stopColor="#D70466" />
+                    <stop stopColor="#2D5BE3" />
+                    <stop offset="0.5" stopColor="#1B3FB5" />
+                    <stop offset="1" stopColor="#12297A" />
                   </linearGradient>
                 </defs>
               </svg>

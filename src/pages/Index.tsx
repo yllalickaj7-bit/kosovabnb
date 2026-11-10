@@ -78,7 +78,7 @@ const Index = () => {
             className="flex gap-2 max-w-2xl"
           >
             <input name="q" maxLength={200} placeholder="p.sh. vilë për 6 vetë në Prizren nën 150€" className="flex-1 rounded-full px-5 py-3 text-foreground bg-white outline-none" />
-            <button className="rounded-full px-6 py-3 font-semibold bg-black/80 hover:bg-black">Pyet AI</button>
+            <button className="rounded-full px-6 py-3 font-bold bg-accent text-accent-foreground hover:brightness-95">Pyet AI</button>
           </form>
           <div className="flex flex-wrap gap-2 mt-4 text-sm">
             <Link to="/planner" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">✨ Planifiko udhëtimin me AI</Link>

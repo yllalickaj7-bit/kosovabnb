@@ -8,7 +8,7 @@ import { DEFAULT_CONFIG, Strategy } from "@/lib/simulation/engine";
 import { MonteCarloResult, STRATEGIES, monteCarlo } from "@/lib/simulation/montecarlo";
 
 const LABEL: Record<Strategy, string> = { static: "Çmim fiks", rules: "Rregulla sezonale", ai: "AI dinamik" };
-const COLOR: Record<Strategy, string> = { static: "#9ca3af", rules: "#3b82f6", ai: "#E61E4D" };
+const COLOR: Record<Strategy, string> = { static: "#9ca3af", rules: "#3b82f6", ai: "#2D5BE3" };
 const MONTHS = ["Jan", "Shk", "Mar", "Pri", "Maj", "Qer", "Kor", "Gus", "Sht", "Tet", "Nën", "Dhj"];
 const eur = (x: number) => `€${Math.round(x).toLocaleString("en-US")}`;
 
