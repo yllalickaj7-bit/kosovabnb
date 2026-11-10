@@ -6,6 +6,8 @@ import { MobileNav } from "@/components/MobileNav";
 import { SEOHead } from "@/components/SEOHead";
 import { TripMap } from "@/components/TripMap";
 import { toast } from "@/hooks/use-toast";
+import { chooseCities, PlanListing } from "@/lib/local-planner";
+import { addDays } from "@/lib/dates";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +38,41 @@ const PlannerPage = () => {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+
+  // Planifikues pa AI: i njëjti format, nga të dhënat reale; disponueshmëria dhe çmimi verifikohen nga baza
+  const localPlan = async (): Promise<Plan | null> => {
+    const { data } = await supabase.from("listings").select("id,title,type,price,location,guests,rating,lat,lng").limit(300);
+    const all = (data ?? []) as PlanListing[];
+    const startDate = start || addDays(new Date().toISOString().slice(0, 10), 14);
+    const choice = chooseCities(all, prompt, guests, nights);
+    const stays: Stay[] = [];
+    const dropped: string[] = [];
+    let cursor = startDate;
+    for (const c of choice) {
+      const out = addDays(cursor, c.nights);
+      let done = false;
+      for (const l of c.candidates.slice(0, 4)) {
+        const { data: rooms } = await supabase.rpc("check_availability", { _listing_id: l.id, _check_in: cursor, _check_out: out, _guests: guests });
+        const room = rooms?.[0];
+        if (!room) continue;
+        const { data: q } = await supabase.rpc("quote_stay", { _room_id: room.room_id, _check_in: cursor, _check_out: out });
+        const quote = q?.[0];
+        if (!quote) continue;
+        stays.push({
+          listing_id: l.id, title: l.title, location: l.location, lat: l.lat, lng: l.lng, room_id: room.room_id, room_name: room.room_name,
+          check_in: cursor, check_out: out, nights: c.nights, total: Number(quote.total), nightly: Number(quote.subtotal) / c.nights,
+          why: `Zgjedhur sepse ka vlerësim ${l.rating ?? "—"} dhe strehon ${guests} mysafirë në ${c.city}.`, activities: [],
+        });
+        done = true;
+        break;
+      }
+      if (!done) dropped.push(`${c.city}: asnjë dhomë e lirë për ${cursor} → ${out}`);
+      cursor = out;
+    }
+    if (stays.length === 0) return null;
+    return { title: "Udhëtimi juaj (planifikim bazë)", summary: "Planifikuar me rregulla nga prona reale, pa AI. Disponueshmëria dhe çmimet janë të verifikuara nga baza.", guests, stays, total: stays.reduce((a, x) => a + x.total, 0), nights: stays.reduce((a, x) => a + x.nights, 0), dropped };
+  };
+
   const generate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError(null); setPlan(null);
@@ -48,7 +85,14 @@ const PlannerPage = () => {
       let msg = "Planifikuesi nuk dha rezultat. Provoni përsëri.";
       try { const body = await (err as { context?: Response })?.context?.json(); if (body?.error) msg = body.error; } catch { /* mbetet mesazhi standard */ }
       if (data?.error) msg = data.error;
-      setError(msg);
+      // AI nuk është aktiv: provo planifikuesin bazë nga të dhënat reale
+      setLoading(true);
+      try {
+        const basic = await localPlan();
+        if (basic) { setPlan(basic); setError(null); setLoading(false); return; }
+      } catch { /* mbetet mesazhi i gabimit */ }
+      setLoading(false);
+      setError(`${msg} Planifikuesi bazë nuk gjeti dhoma të lira për këto data: provo data të tjera ose më pak net.`);
       return;
     }
     setPlan(data as Plan);

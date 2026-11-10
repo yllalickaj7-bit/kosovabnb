@@ -2,8 +2,8 @@
 // Sekretet (Supabase → Edge Functions → Secrets): ANTHROPIC_API_KEY (i detyrueshëm), ANTHROPIC_MODEL (opsional), SITE_URL (opsional).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json, UUID_RE, DATE_RE } from "../_shared/cors.ts";
+import { callLlm, llmMissingMessage, llmProvider } from "../_shared/llm.ts";
 
-const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-haiku-5-5";
 const SITE_URL = Deno.env.get("SITE_URL") ?? "https://kosovabnb.lovable.app";
 const MAX_MESSAGES = 20;
 const MAX_CHARS = 2000;
@@ -62,8 +62,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Metodë e palejuar" }, 405);
 
-  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
-  if (!apiKey) return json({ error: "Chatbot-i nuk është konfiguruar ende (mungon ANTHROPIC_API_KEY)." }, 503);
+  if (!llmProvider()) return json({ error: llmMissingMessage }, 503);
 
   let body: Json;
   try { body = await req.json(); } catch { return json({ error: "JSON i pavlefshëm" }, 400); }
@@ -159,16 +158,11 @@ Deno.serve(async (req) => {
   const convo: Json[] = messages.map((m) => ({ role: m.role, content: m.content }));
   let reply = "";
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 1024, system, tools: TOOLS, messages: convo }),
-    });
-    if (!res.ok) {
-      console.error("Anthropic error", res.status, await res.text());
+    const data = await callLlm({ system, messages: convo, tools: TOOLS, maxTokens: 1024 });
+    if (!data.ok) {
+      console.error("LLM error", data.status, data.error);
       return json({ error: "Asistenti nuk është i disponueshëm për momentin. Provoni pas pak." }, 502);
     }
-    const data = await res.json();
     const text = (data.content as Json[]).filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
     if (data.stop_reason !== "tool_use") { reply = text; break; }
 
