@@ -95,7 +95,7 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
     >
       {/* Image Container */}
       <div
-        className="relative aspect-square rounded-xl overflow-hidden bg-secondary mb-3"
+        className="relative aspect-square rounded-2xl overflow-hidden bg-secondary mb-3 card-shadow group-hover:card-shadow-hover transition-shadow duration-300"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -110,7 +110,7 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
             animate={{ opacity: 1 }}
             exit={{ opacity: 0.6 }}
             transition={{ duration: 0.15 }}
-            className="w-full h-full object-cover select-none pointer-events-none"
+            className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
             draggable={false}
             loading="lazy"
             width={400}
@@ -211,9 +211,9 @@ export const ListingCard = ({ id, title, location, distance, dates, price, ratin
         <p className="text-sm text-muted-foreground">{location}</p>
         <p className="text-sm text-muted-foreground">{distance}</p>
         <p className="text-sm text-muted-foreground">{dates}</p>
-        <p className="text-sm text-foreground mt-1">
-          <span className="font-semibold">€{price}</span>
-          <span className="text-muted-foreground font-normal"> / natë</span>
+        <p className="text-sm text-foreground mt-1.5">
+          <span className="inline-block rounded-full bg-primary/10 text-primary font-bold px-2.5 py-0.5">€{price}</span>
+          <span className="text-muted-foreground font-normal ml-1">/ natë</span>
         </p>
       </div>
     </motion.div>

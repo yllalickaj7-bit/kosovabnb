@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { CategoryFilter, CategoryType } from "@/components/CategoryFilter";
 import { ListingRow } from "@/components/ListingRow";
 import { ListingCardSkeleton } from "@/components/ListingCardSkeleton";
+import { SiteFooter } from "@/components/SiteFooter";
 import { MobileNav } from "@/components/MobileNav";
 import { SEOHead, createOrganizationSchema, createWebSiteSchema, createLocalBusinessSchema } from "@/components/SEOHead";
 import { Link } from "react-router-dom";
@@ -66,8 +67,8 @@ const Index = () => {
 
       <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[200px] sm:pt-[144px] pb-24 md:pb-8">
         {/* AI: hyrja e re e kryefaqes */}
-        <section className="mb-8 rounded-3xl p-6 sm:p-8 text-white" style={{ background: "var(--gradient-brand)" }} aria-label="Asistenti AI">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Gjej qëndrimin e përsosur në Kosovë, thjesht duke e përshkruar</h1>
+        <section className="mb-10 rounded-[2rem] p-7 sm:p-12 text-white shadow-xl" style={{ background: "var(--gradient-brand)" }} aria-label="Asistenti AI">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-3 max-w-3xl">Gjej qëndrimin e përsosur në Kosovë, thjesht duke e përshkruar</h1>
           <p className="opacity-90 mb-4 max-w-2xl">Shkruaj çfarë dëshiron dhe asistenti kërkon, krahason çmimet dhe të çon te rezervimi.</p>
           <form
             onSubmit={(e) => {
@@ -85,6 +86,9 @@ const Index = () => {
             <Link to="/simulator" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">📈 Simulatori i çmimeve</Link>
             <Link to="/host/revenue" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">💶 Revenue Manager</Link>
           </div>
+          {listings && listings.length > 0 && (
+            <p className="mt-5 text-sm opacity-90">{listings.length} vendbanime · rezervim i sigurt · pagesë provë pa rrezik</p>
+          )}
         </section>
 
         {/* Results count */}
@@ -144,6 +148,7 @@ const Index = () => {
         )}
       </main>
 
+      <SiteFooter />
       <MobileNav />
     </div>
   );
