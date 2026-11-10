@@ -82,6 +82,7 @@ supabase secrets set ANTHROPIC_API_KEY=sk-ant-...   # i detyrueshëm për chatbo
 supabase secrets set ANTHROPIC_MODEL=claude-haiku-5-5 SITE_URL=https://<domeni-yt>   # opsionale
 supabase functions deploy chat
 supabase functions deploy price-recommend
+supabase functions deploy trip-planner
 ```
 
 Pa `ANTHROPIC_API_KEY`: chatbot-i kthen mesazh "nuk është konfiguruar", ndërsa rekomandimet e çmimit punojnë me shpjegimin standard në shqip.
@@ -93,12 +94,13 @@ Prona ekzistuese (seed) nuk kanë `owner_id`; për t'i lidhur me një host: `upd
 |---|---|---|
 | 1 | Dokumenti fillestar | Gati: `docs/Java1_Dokumenti_Fillestar_KosovaBNB.docx` |
 | 2 | UML + ER + API | Gati: `docs/Java2_Dokumenti_Projektimit_KosovaBNB.docx`, diagramet te `docs/diagrams/` |
-| 3 | Wireframe + Git + plan | UI ekzistues + faqet e reja (pagesa, rezervimet, host, chatbot); mbetet Figma/prototipi nëse kërkohet |
+| 3 | Wireframe + Git + plan | Gati: `docs/Java3_Prototipi_dhe_Plani_KosovaBNB.docx`, `docs/wireframes/` (8 PNG) |
 | 4 | Backend bazë | Gati: migrimet, funksionet, RLS, tipet TypeScript (rigjeneruar nga skema) |
 | 5 | Demo 50% | Kod gati: rezervim + pagesë e simuluar; duhet testuar në Supabase real |
 | 6 | Chatbot, çmimi, siguria | Kod gati; chatbot-i kërkon `ANTHROPIC_API_KEY` dhe deploy |
-| 7 | Teste + dokumentim | Teste SQL të bëra manualisht; mungojnë testet automatike (Vitest) dhe testimi me përdorues |
-| 8 | Final | — |
+| 7 | Teste + dokumentim | Gati: 44 teste Vitest, 15 grupe SQL (`supabase/tests/run.sh`), `docs/Java7_Raporti_Testimit_KosovaBNB.docx`; mbetet testimi me përdorues |
+| 8 | Final | Gati: `docs/Java8_Raporti_Final_KosovaBNB.docx`, `docs/Java8_Prezantimi_KosovaBNB.pptx` |
+| + | Veçori shtesë | Simulator, Revenue Manager, Planifikues AI: shih `docs/WOW_FEATURES.md` |
 
 ## 7. Çfarë është verifikuar dhe çfarë jo
 
