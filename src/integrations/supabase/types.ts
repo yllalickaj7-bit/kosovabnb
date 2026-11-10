@@ -14,12 +14,184 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          check_in: string
+          check_out: string
+          created_at: string
+          guest_email: string
+          guest_id: string | null
+          guest_name: string
+          guest_phone: string | null
+          guests: number
+          id: string
+          listing_id: string
+          nights: number | null
+          notes: string | null
+          price_per_night: number
+          room_id: string
+          service_fee: number
+          source: string
+          status: Database["public"]["Enums"]["booking_status"]
+          subtotal: number
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          check_in: string
+          check_out: string
+          created_at?: string
+          guest_email: string
+          guest_id?: string | null
+          guest_name: string
+          guest_phone?: string | null
+          guests?: number
+          id?: string
+          listing_id: string
+          nights?: number | null
+          notes?: string | null
+          price_per_night: number
+          room_id: string
+          service_fee?: number
+          source?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          subtotal: number
+          total_price: number
+          updated_at?: string
+        }
+        Update: {
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          guest_email?: string
+          guest_id?: string | null
+          guest_name?: string
+          guest_phone?: string | null
+          guests?: number
+          id?: string
+          listing_id?: string
+          nights?: number | null
+          notes?: string | null
+          price_per_night?: number
+          room_id?: string
+          service_fee?: number
+          source?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          subtotal?: number
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listing_occupancy_30d"
+            referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "bookings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          listing_id: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string
+          listing_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          listing_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_conversations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listing_occupancy_30d"
+            referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "chat_conversations_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          tool_name: string | null
+          tool_payload: Json | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          tool_name?: string | null
+          tool_payload?: Json | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          tool_name?: string | null
+          tool_payload?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           amenities: string[] | null
           bathrooms: number | null
           bedrooms: number | null
           created_at: string
+          currency: string
           dates: string
           description: string | null
           distance: string
@@ -28,9 +200,11 @@ export type Database = {
           host_name: string | null
           id: string
           images_url: string[]
+          is_active: boolean
           lat: number | null
           lng: number | null
           location: string
+          owner_id: string | null
           price: number
           rating: number
           title: string
@@ -41,6 +215,7 @@ export type Database = {
           bathrooms?: number | null
           bedrooms?: number | null
           created_at?: string
+          currency?: string
           dates?: string
           description?: string | null
           distance?: string
@@ -49,9 +224,11 @@ export type Database = {
           host_name?: string | null
           id?: string
           images_url?: string[]
+          is_active?: boolean
           lat?: number | null
           lng?: number | null
           location: string
+          owner_id?: string | null
           price: number
           rating?: number
           title: string
@@ -62,6 +239,7 @@ export type Database = {
           bathrooms?: number | null
           bedrooms?: number | null
           created_at?: string
+          currency?: string
           dates?: string
           description?: string | null
           distance?: string
@@ -70,9 +248,11 @@ export type Database = {
           host_name?: string | null
           id?: string
           images_url?: string[]
+          is_active?: boolean
           lat?: number | null
           lng?: number | null
           location?: string
+          owner_id?: string | null
           price?: number
           rating?: number
           title?: string
@@ -80,15 +260,353 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          card_brand: string | null
+          card_last4: string | null
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          is_simulated: boolean
+          method: string
+          provider_ref: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          card_brand?: string | null
+          card_last4?: string | null
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          is_simulated?: boolean
+          method?: string
+          provider_ref?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          card_brand?: string | null
+          card_last4?: string | null
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          is_simulated?: boolean
+          method?: string
+          provider_ref?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_recommendations: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          current_price: number
+          decided_at: string | null
+          explanation: string | null
+          factors: Json
+          id: string
+          model_version: string
+          recommended_price: number
+          room_id: string
+          status: Database["public"]["Enums"]["recommendation_status"]
+          stay_date: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          current_price: number
+          decided_at?: string | null
+          explanation?: string | null
+          factors?: Json
+          id?: string
+          model_version?: string
+          recommended_price: number
+          room_id: string
+          status?: Database["public"]["Enums"]["recommendation_status"]
+          stay_date: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          current_price?: number
+          decided_at?: string | null
+          explanation?: string | null
+          factors?: Json
+          id?: string
+          model_version?: string
+          recommended_price?: number
+          room_id?: string
+          status?: Database["public"]["Enums"]["recommendation_status"]
+          stay_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_recommendations_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing_rules: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          listing_id: string | null
+          multiplier: number
+          name: string
+          start_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          kind: string
+          listing_id?: string | null
+          multiplier: number
+          name: string
+          start_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          listing_id?: string | null
+          multiplier?: number
+          name?: string
+          start_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_rules_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listing_occupancy_30d"
+            referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "pricing_rules_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          language: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          language?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          language?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          booking_id: string
+          comment: string | null
+          created_at: string
+          guest_id: string | null
+          id: string
+          listing_id: string
+          rating: number
+        }
+        Insert: {
+          booking_id: string
+          comment?: string | null
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          listing_id: string
+          rating: number
+        }
+        Update: {
+          booking_id?: string
+          comment?: string | null
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          listing_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listing_occupancy_30d"
+            referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          base_price: number
+          capacity: number
+          created_at: string
+          id: string
+          is_active: boolean
+          listing_id: string
+          max_price: number | null
+          min_price: number | null
+          name: string
+          room_type: string
+        }
+        Insert: {
+          base_price: number
+          capacity?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          listing_id: string
+          max_price?: number | null
+          min_price?: number | null
+          name: string
+          room_type?: string
+        }
+        Update: {
+          base_price?: number
+          capacity?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          listing_id?: string
+          max_price?: number | null
+          min_price?: number | null
+          name?: string
+          room_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listing_occupancy_30d"
+            referencedColumns: ["listing_id"]
+          },
+          {
+            foreignKeyName: "rooms_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      listing_occupancy_30d: {
+        Row: {
+          booked_nights: number | null
+          listing_id: string | null
+          occupancy_rate: number | null
+          rooms: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      nightly_price: {
+        Args: { _night: string; _room_id: string }
+        Returns: number
+      }
+      quote_stay: {
+        Args: { _check_in: string; _check_out: string; _room_id: string }
+        Returns: {
+          nights: number
+          service_fee: number
+          subtotal: number
+          total: number
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "guest" | "host" | "admin"
+      booking_status: "pending" | "confirmed" | "cancelled" | "completed"
+      payment_status: "pending" | "succeeded" | "failed" | "refunded"
+      recommendation_status: "suggested" | "accepted" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -215,6 +733,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["guest", "host", "admin"],
+      booking_status: ["pending", "confirmed", "cancelled", "completed"],
+      payment_status: ["pending", "succeeded", "failed", "refunded"],
+      recommendation_status: ["suggested", "accepted", "rejected"],
+    },
   },
 } as const
