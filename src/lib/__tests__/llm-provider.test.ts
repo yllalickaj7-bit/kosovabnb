@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { callLlm, llmProvider } from "../../../supabase/functions/_shared/llm";
 
+declare global {
+  var Deno: { env: { get(name: string): string | undefined } };
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 describe("Groq provider migration", () => {
