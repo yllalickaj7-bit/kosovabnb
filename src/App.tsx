@@ -16,6 +16,9 @@ import BecomeHostPage from "./pages/BecomeHostPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import MyBookingsPage from "./pages/MyBookingsPage";
 import HostDashboardPage from "./pages/HostDashboardPage";
+import SimulatorPage from "./pages/SimulatorPage";
+import RevenueManagerPage from "./pages/RevenueManagerPage";
+import PlannerPage from "./pages/PlannerPage";
 import { ChatWidget } from "@/components/ChatWidget";
 import NotFound from "./pages/NotFound";
 
@@ -41,6 +44,9 @@ const App = () => (
                 <Route path="/checkout/:id" element={<CheckoutPage />} />
                 <Route path="/bookings" element={<MyBookingsPage />} />
                 <Route path="/host" element={<HostDashboardPage />} />
+                <Route path="/host/revenue" element={<RevenueManagerPage />} />
+                <Route path="/simulator" element={<SimulatorPage />} />
+                <Route path="/planner" element={<PlannerPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

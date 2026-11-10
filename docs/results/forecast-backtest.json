@@ -1,0 +1,41 @@
+{
+  "trainSeeds": 20,
+  "testSeeds": 20,
+  "rows": [
+    {
+      "leadDays": "0-7",
+      "samples": 3040,
+      "maePickup": 0.06311687435923377,
+      "maeOtbOnly": 0.061578947368420046,
+      "maePriorOnly": 0.1818028457538364
+    },
+    {
+      "leadDays": "8-14",
+      "samples": 2660,
+      "maePickup": 0.1027672518638403,
+      "maeOtbOnly": 0.19045112781954956,
+      "maePriorOnly": 0.1797717052017398
+    },
+    {
+      "leadDays": "15-30",
+      "samples": 6080,
+      "maePickup": 0.13147381231776745,
+      "maeOtbOnly": 0.34662828947368385,
+      "maePriorOnly": 0.1803276480712041
+    },
+    {
+      "leadDays": "31-60",
+      "samples": 11400,
+      "maePickup": 0.16055470901760485,
+      "maeOtbOnly": 0.5154736842105286,
+      "maePriorOnly": 0.1819484622582493
+    },
+    {
+      "leadDays": "61-89",
+      "samples": 11020,
+      "maePickup": 0.17747512839110638,
+      "maeOtbOnly": 0.5898820326678736,
+      "maePriorOnly": 0.18497153595394217
+    }
+  ]
+}

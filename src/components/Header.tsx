@@ -175,6 +175,24 @@ export const Header = ({ onSearch }: HeaderProps) => {
                           Paneli i host-it
                         </button>
                         <button
+                          onClick={() => { navigate("/host/revenue"); setMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
+                        >
+                          Revenue Manager
+                        </button>
+                        <button
+                          onClick={() => { navigate("/planner"); setMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
+                        >
+                          Planifikuesi i udhëtimit
+                        </button>
+                        <button
+                          onClick={() => { navigate("/simulator"); setMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
+                        >
+                          Simulatori i çmimeve
+                        </button>
+                        <button
                           onClick={() => { signOut(); setMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
                         >
