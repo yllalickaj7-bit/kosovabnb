@@ -499,6 +499,38 @@ export type Database = {
           },
         ]
       }
+      room_price_overrides: {
+        Row: {
+          created_at: string
+          price: number
+          room_id: string
+          source: string
+          stay_date: string
+        }
+        Insert: {
+          created_at?: string
+          price: number
+          room_id: string
+          source?: string
+          stay_date: string
+        }
+        Update: {
+          created_at?: string
+          price?: number
+          room_id?: string
+          source?: string
+          stay_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_price_overrides_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rooms: {
         Row: {
           base_price: number
@@ -581,6 +613,43 @@ export type Database = {
       }
     }
     Functions: {
+      become_host: { Args: never; Returns: undefined }
+      check_availability: {
+        Args: {
+          _check_in: string
+          _check_out: string
+          _guests?: number
+          _listing_id: string
+        }
+        Returns: {
+          base_price: number
+          capacity: number
+          room_id: string
+          room_name: string
+          room_type: string
+        }[]
+      }
+      create_booking: {
+        Args: {
+          _check_in: string
+          _check_out: string
+          _guest_email: string
+          _guest_name: string
+          _guest_phone?: string
+          _guests: number
+          _room_id: string
+          _source?: string
+        }
+        Returns: string
+      }
+      decide_price_recommendation: {
+        Args: { _accept: boolean; _id: string }
+        Returns: undefined
+      }
+      generate_price_recommendations: {
+        Args: { _days?: number; _listing_id: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -599,6 +668,14 @@ export type Database = {
           service_fee: number
           subtotal: number
           total: number
+        }[]
+      }
+      simulate_payment: {
+        Args: { _booking_id: string; _card_number: string; _expiry: string }
+        Returns: {
+          message: string
+          payment_id: string
+          status: Database["public"]["Enums"]["payment_status"]
         }[]
       }
     }

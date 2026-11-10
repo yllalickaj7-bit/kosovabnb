@@ -8,6 +8,13 @@
       "when": 1794286722654,
       "tag": "0000_apply_hotel_management_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794286753439,
+      "tag": "0001_apply_booking_payment_pricing_functions",
+      "breakpoints": true
     }
   ]
 }
