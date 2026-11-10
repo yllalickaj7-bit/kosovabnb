@@ -8,14 +8,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { SEOHead } from "@/components/SEOHead";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-
-const formatCardNumber = (v: string) =>
-  v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
-
-const formatExpiry = (v: string) => {
-  const d = v.replace(/\D/g, "").slice(0, 4);
-  return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
-};
+import { formatCardNumber, formatExpiry } from "@/lib/booking-utils";
 
 const CheckoutPage = () => {
   const { id } = useParams<{ id: string }>();
