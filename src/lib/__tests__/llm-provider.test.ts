@@ -16,7 +16,7 @@ describe("Groq provider migration", () => {
     expect(llmProvider()).toBe("groq");
     const result = await callLlm({ system: "Test", messages: [{ role: "user", content: "Hello" }] });
     expect(request.mock.calls[0][0]).toBe("https://api.groq.com/openai/v1/chat/completions");
-    expect(JSON.parse(request.mock.calls[0][1].body).model).toBe("llama-3.3-70b-versatile");
+    expect(JSON.parse(request.mock.calls[0][1].body).model).toBe("llama-3.1-8b-instant");
     expect(result.ok).toBe(true);
   });
 
