@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Star, ArrowLeft, Heart, Share, Wifi, Utensils, Car, Wind, Users, Bed, Bath, ChevronLeft, ChevronRight } from "lucide-react";
 import { Header } from "@/components/Header";
 import { BookingWidget } from "@/components/BookingWidget";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { MobileNav } from "@/components/MobileNav";
 import { LeafletMap } from "@/components/LeafletMap";
 import { SEOHead, createProductSchema, createBreadcrumbSchema } from "@/components/SEOHead";
@@ -22,6 +23,7 @@ const ListingPage = () => {
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
 
   const { data: listing, isLoading } = useQuery({
     queryKey: ["listing", id],
@@ -245,6 +247,7 @@ const ListingPage = () => {
           {/* Right: Booking Widget */}
           <aside className="hidden lg:block">
             <BookingWidget
+              listingId={listing.id}
               price={listing.price}
               rating={Number(listing.rating)}
               listingTitle={listing.title}
@@ -261,10 +264,7 @@ const ListingPage = () => {
               <span className="text-muted-foreground text-sm"> natë</span>
             </div>
             <button
-              onClick={() => {
-                const msg = `Përshëndetje! Jam i interesuar për: *${listing.title}* në ${listing.location}. Çmimi: €${listing.price}/nata.`;
-                window.open(`https://wa.me/38349000000?text=${encodeURIComponent(msg)}`, "_blank");
-              }}
+              onClick={() => setMobileBookingOpen(true)}
               className="gradient-brand text-white font-semibold px-6 py-3 rounded-xl text-sm hover:opacity-90 transition-opacity"
             >
               Rezervo
@@ -272,6 +272,21 @@ const ListingPage = () => {
           </div>
         </div>
       </main>
+
+      <Drawer open={mobileBookingOpen} onOpenChange={setMobileBookingOpen}>
+        <DrawerContent className="max-h-[90vh] overflow-y-auto px-4 pb-8">
+          <DrawerHeader>
+            <DrawerTitle>Rezervo {listing.title}</DrawerTitle>
+          </DrawerHeader>
+          <BookingWidget
+            listingId={listing.id}
+            price={listing.price}
+            rating={Number(listing.rating)}
+            listingTitle={listing.title}
+            location={listing.location}
+          />
+        </DrawerContent>
+      </Drawer>
 
       <MobileNav />
     </div>

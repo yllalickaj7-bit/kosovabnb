@@ -1,0 +1,25 @@
+sequenceDiagram
+  actor G as Mysafiri
+  participant UI as React UI
+  participant DB as Supabase (Postgres RPC)
+  G->>UI: Zgjedh datat dhe mysafirët
+  UI->>DB: rpc check_availability(listing, datat, mysafirët)
+  DB-->>UI: dhomat e lira
+  UI->>DB: rpc quote_stay(dhoma, datat)
+  DB-->>UI: net, nëntotali, tarifa, totali
+  G->>UI: Shtyp "Rezervo"
+  UI->>DB: rpc create_booking(...)
+  Note over DB: kontrollon datat, kapacitetin dhe çmimin në server<br/>EXCLUDE constraint ndalon mbivendosjen
+  alt dhoma e lirë
+    DB-->>UI: booking_id (status pending, mbahet 30 min)
+    UI->>G: faqja e pagesës
+    G->>UI: kartë provë + skadim
+    UI->>DB: rpc simulate_payment(booking_id, kartë, skadim)
+    alt karta e vlefshme
+      DB-->>UI: succeeded, booking bëhet confirmed
+    else karta e refuzuar
+      DB-->>UI: failed + arsyeja (rezervimi mbetet pending)
+    end
+  else dhoma e zënë
+    DB-->>UI: gabim "Dhoma nuk është e lirë"
+  end

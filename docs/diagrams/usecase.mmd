@@ -1,0 +1,40 @@
+flowchart LR
+  G([Mysafiri]):::actor
+  H([Host / Hoteliti]):::actor
+  A([Administratori]):::actor
+  AI([Claude API]):::ext
+
+  UC2(Regjistrohu / Hyr)
+  UC1(Kërko dhe shiko prona)
+  UC3(Kontrollo disponueshmërinë dhe çmimin)
+  UC4(Rezervo dhomën)
+  UC5(Paguaj - simulim)
+  UC6(Anulo rezervimin)
+  UC7(Bisedo me chatbot-in)
+  UC8(Menaxho prona dhe dhoma)
+  UC9(Shiko rezervimet e pronës)
+  UC10(Gjenero rekomandime çmimi)
+  UC11(Prano ose refuzo çmimin)
+  UC12(Menaxho të gjitha pronat)
+  UC13(Menaxho rolet)
+
+  G --- UC1
+  G --- UC2
+  G --- UC4
+  G --- UC6
+  G --- UC7
+  H --- UC2
+  H --- UC8
+  H --- UC9
+  H --- UC10
+  H --- UC11
+  A --- UC12
+  A --- UC13
+  UC4 -. include .-> UC3
+  UC4 -. include .-> UC2
+  UC5 -. extend .-> UC4
+  UC7 -. include .-> UC3
+  UC7 --- AI
+  UC10 --- AI
+  classDef actor fill:#fde,stroke:#a36
+  classDef ext fill:#eef,stroke:#66a

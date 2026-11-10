@@ -1,0 +1,11 @@
+flowchart LR
+  U[Shfletuesi<br/>React + Vite + TS] -->|supabase-js, JWT| API[Supabase API<br/>PostgREST + RPC]
+  U -->|functions.invoke| EF1[Edge Function chat]
+  U -->|functions.invoke| EF2[Edge Function price-recommend]
+  API --> PG[(PostgreSQL<br/>RLS + funksione SQL)]
+  EF1 -->|JWT i përdoruesit| PG
+  EF2 -->|JWT i përdoruesit| PG
+  EF1 --> CL[Claude API]
+  EF2 --> CL
+  U --> AUTH[Supabase Auth]
+  AUTH --> PG

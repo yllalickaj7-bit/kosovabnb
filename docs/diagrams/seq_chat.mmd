@@ -1,0 +1,28 @@
+sequenceDiagram
+  actor G as Mysafiri
+  participant W as ChatWidget
+  participant F as Edge Function chat
+  participant C as Claude API
+  participant DB as Supabase (RPC, JWT i përdoruesit)
+  G->>W: "Vilë në Prizren për 6, 20-23 korrik"
+  W->>F: mesazhet + JWT
+  F->>C: system prompt + tools + mesazhet
+  C-->>F: tool_use search_listings
+  F->>DB: kërkim pronash (RLS)
+  DB-->>F: pronat
+  F->>C: tool_result
+  C-->>F: tool_use check_availability
+  F->>DB: check_availability + quote_stay
+  DB-->>F: dhomat dhe totali
+  F->>C: tool_result
+  C-->>F: përgjigje me opsione dhe pyetje "Konfirmon?"
+  F-->>W: reply
+  G->>W: "Po"
+  W->>F: historiku + "Po"
+  F->>C: ...
+  C-->>F: tool_use create_booking
+  F->>DB: rpc create_booking(source=chatbot)
+  DB-->>F: booking_id
+  F->>C: tool_result
+  C-->>F: lidhja e pagesës
+  F-->>W: reply me /checkout/ID

@@ -1,0 +1,18 @@
+sequenceDiagram
+  actor H as Host
+  participant UI as Paneli i host-it
+  participant F as Edge Function price-recommend
+  participant DB as Supabase (RPC)
+  participant C as Claude API
+  H->>UI: "Gjenero për 30 ditët"
+  UI->>F: listing_id + JWT
+  F->>DB: rpc generate_price_recommendations
+  Note over DB: për çdo dhomë dhe datë:<br/>çmimi nga rregullat × faktori i kërkesës (zënia ±7 ditë, ditët deri në qëndrim)<br/>i kufizuar në min/max
+  DB-->>F: numri i sugjerimeve
+  F->>C: faktorët (pa leje për të ndryshuar numrat)
+  C-->>F: shpjegim një-fjalësh për çdo sugjerim
+  F->>DB: përditëson shpjegimet
+  F-->>UI: gati
+  H->>UI: Prano ose refuzo
+  UI->>DB: rpc decide_price_recommendation
+  Note over DB: pranimi shkruan çmimin te room_price_overrides,<br/>dhe quote_stay e përdor për atë natë
