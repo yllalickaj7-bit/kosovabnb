@@ -163,6 +163,18 @@ export const Header = ({ onSearch }: HeaderProps) => {
                           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                         </div>
                         <button
+                          onClick={() => { navigate("/bookings"); setMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
+                        >
+                          Rezervimet e mia
+                        </button>
+                        <button
+                          onClick={() => { navigate("/host"); setMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
+                        >
+                          Paneli i host-it
+                        </button>
+                        <button
                           onClick={() => { signOut(); setMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
                         >

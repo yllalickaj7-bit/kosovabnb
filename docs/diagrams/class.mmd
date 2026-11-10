@@ -1,0 +1,99 @@
+classDiagram
+  class Listing {
+    +uuid id
+    +string title
+    +string type
+    +string location
+    +uuid ownerId
+    +bool isActive
+  }
+  class Room {
+    +uuid id
+    +string name
+    +string roomType
+    +int capacity
+    +decimal basePrice
+    +decimal minPrice
+    +decimal maxPrice
+  }
+  class Booking {
+    +uuid id
+    +date checkIn
+    +date checkOut
+    +int guests
+    +int nights
+    +decimal totalPrice
+    +BookingStatus status
+    +cancel()
+  }
+  class Payment {
+    +uuid id
+    +decimal amount
+    +PaymentStatus status
+    +string cardLast4
+    +bool isSimulated
+  }
+  class PricingRule {
+    +string kind
+    +date startDate
+    +date endDate
+    +decimal multiplier
+  }
+  class PriceRecommendation {
+    +date stayDate
+    +decimal currentPrice
+    +decimal recommendedPrice
+    +json factors
+    +string explanation
+    +RecommendationStatus status
+  }
+  class ChatConversation {
+    +uuid id
+    +string language
+  }
+  class ChatMessage {
+    +string role
+    +string content
+    +json toolPayload
+  }
+  class User {
+    +uuid id
+    +Role[] roles
+  }
+  class BookingService {
+    <<SQL function>>
+    +checkAvailability()
+    +quoteStay()
+    +createBooking()
+  }
+  class PaymentService {
+    <<SQL function>>
+    +simulatePayment()
+  }
+  class PricingService {
+    <<SQL function>>
+    +nightlyPrice()
+    +generateRecommendations()
+    +decideRecommendation()
+  }
+  class ChatService {
+    <<Edge Function>>
+    +handleMessage()
+  }
+
+  User "1" --> "*" Listing : owns
+  User "1" --> "*" Booking : makes
+  Listing "1" *-- "1..*" Room
+  Room "1" --> "*" Booking
+  Booking "1" *-- "*" Payment
+  Listing "0..1" --> "*" PricingRule
+  Room "1" --> "*" PriceRecommendation
+  User "1" --> "*" ChatConversation
+  ChatConversation "1" *-- "1..*" ChatMessage
+  BookingService ..> Booking
+  BookingService ..> PricingService : quote
+  PaymentService ..> Payment
+  PaymentService ..> Booking : confirms
+  PricingService ..> PricingRule
+  PricingService ..> PriceRecommendation
+  ChatService ..> BookingService : tools

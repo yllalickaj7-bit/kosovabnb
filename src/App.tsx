@@ -13,6 +13,10 @@ import AuthPage from "./pages/AuthPage";
 import ExperiencesPage from "./pages/ExperiencesPage";
 import ServicesPage from "./pages/ServicesPage";
 import BecomeHostPage from "./pages/BecomeHostPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import MyBookingsPage from "./pages/MyBookingsPage";
+import HostDashboardPage from "./pages/HostDashboardPage";
+import { ChatWidget } from "@/components/ChatWidget";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,9 +38,13 @@ const App = () => (
                 <Route path="/experiences" element={<ExperiencesPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/become-host" element={<BecomeHostPage />} />
+                <Route path="/checkout/:id" element={<CheckoutPage />} />
+                <Route path="/bookings" element={<MyBookingsPage />} />
+                <Route path="/host" element={<HostDashboardPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <ChatWidget />
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

@@ -15,11 +15,11 @@ Ky dokument përshkruan çfarë ekziston, çfarë do të ndërtohet dhe në çfa
 React UI ──► Supabase (Postgres + RLS + Auth)
    │                ▲
    ├─► Edge Function  chat              ──► Claude API (tool calling) ──► check_availability / quote_stay / create_booking
-   ├─► Edge Function  simulate-payment  ──► shkruan payments, konfirmon bookings
-   └─► Edge Function  price-recommend   ──► faktorët (rregulla + zënia) ──► Claude (vetëm shpjegimi) ──► price_recommendations
+   ├─► RPC            create_booking / simulate_payment   (SQL, çmimi dhe pagesa në server)
+   └─► Edge Function  price-recommend   ──► rpc generate_price_recommendations ──► Claude (vetëm shpjegimi)
 ```
 
-Çelësat e AI qëndrojnë vetëm në Supabase Secrets. Klienti nuk shkruan kurrë direkt te `payments`, `chat_*` ose `price_recommendations`.
+Çelësat e AI qëndrojnë vetëm në Supabase Secrets. Klienti nuk shkruan kurrë direkt te `payments`, `chat_*` ose `price_recommendations`. Pagesa e simuluar është funksion SQL (`simulate_payment`), jo Edge Function, kështu që punon pa deploy shtesë.
 
 ## 3. Baza e të dhënave
 
@@ -57,23 +57,50 @@ Testuar në PostgreSQL lokal: mbivendosja refuzohet, rezervimi "back-to-back" le
 - Chatbot për host-in: "Sa rezervime kam këtë javë?".
 - Njoftim me email kur konfirmohet rezervimi.
 
-## 5. Probleme sigurie në kodin ekzistues (për t'u rregulluar në Javën 6, ose më herët)
+## 5. Siguria: panel admin i vjetër (rregulluar)
 
-1. `supabase/functions/admin-auth/index.ts` ka fjalëkalimin të koduar (`pass123`) dhe **nuk e verifikon token-in** për veprimet list/create/update/delete. Funksioni përdor `service role`, kështu që kushdo që e di URL-në mund të krijojë, ndryshojë ose fshijë prona. Zgjidhja: roli `admin` në `user_roles` + RLS, dhe heqja e funksionit.
-2. Fjalëkalimi i tanishëm duhet të konsiderohet i ekspozuar (është në repo publike). Duhet ndryshuar kudo ku përdoret.
-3. `.env` është i commit-uar. Përmban vetëm çelësin publik të Supabase (i sigurt për frontend), por `.env` duhet shtuar në `.gitignore` dhe çelësat e rinj të ruhen si Secrets.
+Funksioni `admin-auth` kishte fjalëkalimin të koduar (`pass123`) dhe nuk e verifikonte token-in; përdorte `service role`, pra kushdo që e dinte URL-në mund të krijonte, ndryshonte ose fshinte prona. Në këtë dege:
+- `AdminPage` kyçet me llogari dhe rolin `admin` në `user_roles`; të dhënat mbrohen nga RLS.
+- Skedari `supabase/functions/admin-auth` u fshi nga repo.
+
+**Ende duhet bërë me dorë:**
+1. Fshij funksionin e vendosur: `supabase functions delete admin-auth` (heqja nga repo nuk e heq nga Supabase).
+2. Fjalëkalimi `pass123` ishte në repo publike: konsiderohet i ekspozuar; ndryshoje kudo tjetër ku është përdorur.
+3. `.env` është i commit-uar. Përmban vetëm çelësin publik të Supabase (i sigurt për frontend); mos vendos kurrë çelës sekret aty.
+
+## 5b. Vendosja (deploy)
+
+```bash
+# 1. Migrimet (sipas rendit)
+supabase db push
+
+# 2. Admini i parë (zëvendëso me ID-në e përdoruesit nga Auth → Users)
+#    insert into public.user_roles (user_id, role) values ('<USER_ID>', 'admin');
+
+# 3. Chatbot dhe shpjegimet AI
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...   # i detyrueshëm për chatbot
+supabase secrets set ANTHROPIC_MODEL=claude-haiku-5-5 SITE_URL=https://<domeni-yt>   # opsionale
+supabase functions deploy chat
+supabase functions deploy price-recommend
+```
+
+Pa `ANTHROPIC_API_KEY`: chatbot-i kthen mesazh "nuk është konfiguruar", ndërsa rekomandimet e çmimit punojnë me shpjegimin standard në shqip.
+Prona ekzistuese (seed) nuk kanë `owner_id`; për t'i lidhur me një host: `update public.listings set owner_id = '<USER_ID>' where id = '...';`.
 
 ## 6. Radha e punës
 
 | Java | Dorëzimi | Statusi |
 |---|---|---|
 | 1 | Dokumenti fillestar | Gati: `docs/Java1_Dokumenti_Fillestar_KosovaBNB.docx` |
-| 2 | UML + ER | ER gati; mbeten use case, klasa, sekuenca |
-| 3 | Wireframe + Git + plan | UI ekzistues; mbeten ekranet e reja |
-| 4 | Backend bazë | Skema gati; mbeten CRUD, tipet TypeScript, auth |
-| 5 | Demo 50% | Rezervim + pagesë e simuluar |
-| 6 | Chatbot, çmimi, siguria | — |
-| 7 | Teste + dokumentim | — |
+| 2 | UML + ER + API | Gati: `docs/Java2_Dokumenti_Projektimit_KosovaBNB.docx`, diagramet te `docs/diagrams/` |
+| 3 | Wireframe + Git + plan | UI ekzistues + faqet e reja (pagesa, rezervimet, host, chatbot); mbetet Figma/prototipi nëse kërkohet |
+| 4 | Backend bazë | Gati: migrimet, funksionet, RLS, tipet TypeScript (rigjeneruar nga skema) |
+| 5 | Demo 50% | Kod gati: rezervim + pagesë e simuluar; duhet testuar në Supabase real |
+| 6 | Chatbot, çmimi, siguria | Kod gati; chatbot-i kërkon `ANTHROPIC_API_KEY` dhe deploy |
+| 7 | Teste + dokumentim | Teste SQL të bëra manualisht; mungojnë testet automatike (Vitest) dhe testimi me përdorues |
 | 8 | Final | — |
 
-Hapi i parë pas aplikimit të migrimit: rigjenero `src/integrations/supabase/types.ts` me `supabase gen types typescript`.
+## 7. Çfarë është verifikuar dhe çfarë jo
+
+- **Verifikuar:** të 4 migrimet aplikohen në PostgreSQL të pastër; testet e sjelljes (mbivendosja, kapaciteti, pagesa me karta të ndryshme, RLS mes përdoruesve, rekomandimet, role) kalojnë; të gjithë skedarët TS/TSX kalojnë kontrollin sintaksor; `types.ts` kompilohet me `tsc --strict`.
+- **Jo e verifikuar:** `npm run build` dhe ekzekutimi i UI-së në shfletues, si dhe Edge Functions kundër Claude API dhe Supabase real. Mjedisi i punës nuk kishte qasje për të instaluar varësitë dhe as çelës API. Para demos duhet `npm install && npm run build` dhe një provë e plotë.

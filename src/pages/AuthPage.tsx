@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +14,7 @@ const AuthPage = () => {
   const { signIn, signUp } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +30,9 @@ const AuthPage = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else if (isLogin) {
-      navigate("/");
+      // redirect vetëm brenda faqes (shmang open redirect)
+      const redirect = searchParams.get("redirect");
+      navigate(redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/");
     } else {
       toast({
         title: "✉️",

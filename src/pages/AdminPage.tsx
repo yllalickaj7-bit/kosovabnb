@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 import { Trash2, Plus, Pencil, LogOut, Eye, X, Save } from "lucide-react";
 
 interface Listing {
@@ -25,8 +27,6 @@ interface Listing {
   lat: number | null;
   lng: number | null;
 }
-
-const EDGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-auth`;
 
 const emptyListing = {
   title: "",
@@ -50,9 +50,8 @@ const emptyListing = {
 const typeOptions = ["Apartamente", "Vila", "Hotele", "Motele", "Kamping", "Dizajn"];
 
 const AdminPage = () => {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
+  const { user, loading: authLoading, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -61,51 +60,31 @@ const AdminPage = () => {
   const [imagesInput, setImagesInput] = useState("");
   const [amenitiesInput, setAmenitiesInput] = useState("");
 
-  const apiCall = useCallback(async (action: string, data?: any) => {
-    const res = await fetch(EDGE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      },
-      body: JSON.stringify({ action, password: action === "login" ? password : undefined, data }),
-    });
-    return res.json();
-  }, [token, password]);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const result = await apiCall("login");
-      if (result.success) {
-        setToken(result.token);
-        setAuthenticated(true);
-        toast({ title: "Sukses", description: "U kyçët me sukses" });
-      } else {
-        toast({ title: "Gabim", description: result.error, variant: "destructive" });
-      }
-    } catch {
-      toast({ title: "Gabim", description: "Diçka shkoi keq", variant: "destructive" });
-    }
-    setLoading(false);
-  };
+  // Roli "admin" verifikohet në bazë (tabela user_roles); të dhënat mbrohen nga RLS, jo nga fjalëkalimi në klient
+  useEffect(() => {
+    if (!user) { setIsAdmin(null); return; }
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .then(({ data }) => setIsAdmin((data ?? []).length > 0));
+  }, [user]);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
-    try {
-      const data = await apiCall("list");
-      if (Array.isArray(data)) setListings(data);
-    } catch {
+    const { data, error } = await supabase.from("listings").select("*").order("created_at", { ascending: false });
+    if (error) {
       toast({ title: "Gabim", description: "Nuk mund të ngarkohen listimet", variant: "destructive" });
+    } else {
+      setListings((data ?? []) as Listing[]);
     }
     setLoading(false);
-  }, [apiCall]);
+  }, []);
 
   useEffect(() => {
-    if (authenticated) fetchListings();
-  }, [authenticated, fetchListings]);
+    if (isAdmin) fetchListings();
+  }, [isAdmin, fetchListings]);
 
   const openCreate = () => {
     setEditingId(null);
@@ -155,18 +134,15 @@ const AdminPage = () => {
     };
 
     setLoading(true);
-    try {
-      if (editingId) {
-        await apiCall("update", { id: editingId, ...saveData });
-        toast({ title: "Sukses", description: "Listimi u përditësua" });
-      } else {
-        await apiCall("create", saveData);
-        toast({ title: "Sukses", description: "Listimi u krijua" });
-      }
+    const { error } = editingId
+      ? await supabase.from("listings").update(saveData).eq("id", editingId)
+      : await supabase.from("listings").insert(saveData);
+    if (error) {
+      toast({ title: "Gabim", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Sukses", description: editingId ? "Listimi u përditësua" : "Listimi u krijua" });
       setShowForm(false);
       fetchListings();
-    } catch {
-      toast({ title: "Gabim", description: "Diçka shkoi keq", variant: "destructive" });
     }
     setLoading(false);
   };
@@ -174,40 +150,38 @@ const AdminPage = () => {
   const handleDelete = async (id: string) => {
     if (!confirm("A jeni i sigurt që doni ta fshini këtë listim?")) return;
     setLoading(true);
-    try {
-      await apiCall("delete", { id });
+    const { error } = await supabase.from("listings").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Gabim", description: error.message, variant: "destructive" });
+    } else {
       toast({ title: "Sukses", description: "Listimi u fshi" });
       fetchListings();
-    } catch {
-      toast({ title: "Gabim", description: "Nuk mund të fshihet", variant: "destructive" });
     }
     setLoading(false);
   };
 
-  // Login screen
-  if (!authenticated) {
+  // Qasja: vetëm përdorues i kyçur me rolin "admin"
+  if (authLoading || (user && isAdmin === null)) {
+    return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Duke ngarkuar...</div>;
+  }
+  if (!user || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-brand mb-4">
-              <span className="text-2xl text-white font-bold">K</span>
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
-            <p className="text-muted-foreground text-sm mt-1">KosovaBnB Menaxhimi</p>
+        <div className="w-full max-w-sm text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-brand mb-4">
+            <span className="text-2xl text-white font-bold">K</span>
           </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Fjalëkalimi"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="h-12 rounded-xl"
-            />
-            <Button type="submit" className="w-full h-12 rounded-xl gradient-brand text-white border-0" disabled={loading}>
-              {loading ? "Duke u kyçur..." : "Kyçu"}
-            </Button>
-          </form>
+          <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
+          <p className="text-muted-foreground text-sm mt-2 mb-6">
+            {!user ? "Hyni me llogarinë tuaj për të vazhduar." : "Kjo llogari nuk ka të drejta administratori."}
+          </p>
+          {!user ? (
+            <Link to={`/auth?redirect=${encodeURIComponent("/admin")}`}>
+              <Button className="w-full h-12 rounded-xl gradient-brand text-white border-0">Hyr</Button>
+            </Link>
+          ) : (
+            <Button variant="outline" className="w-full h-12 rounded-xl" onClick={() => signOut()}>Dil</Button>
+          )}
         </div>
       </div>
     );
@@ -228,7 +202,7 @@ const AdminPage = () => {
             <Button variant="outline" size="sm" onClick={() => window.open("/", "_blank")} className="gap-1.5">
               <Eye className="h-4 w-4" /> Shiko Faqen
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => { setAuthenticated(false); setToken(""); }} className="gap-1.5 text-destructive">
+            <Button variant="ghost" size="sm" onClick={() => signOut()} className="gap-1.5 text-destructive">
               <LogOut className="h-4 w-4" /> Dil
             </Button>
           </div>
