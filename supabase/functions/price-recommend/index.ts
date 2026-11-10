@@ -3,7 +3,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json, UUID_RE } from "../_shared/cors.ts";
 
-const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-haiku-5-5";
+import { callLlm, llmProvider } from "../_shared/llm.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
   if (error) return json({ error: error.message }, 403);
 
   let explained = 0;
-  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
+  const apiKey = llmProvider();
   if (apiKey && (generated ?? 0) > 0) {
     const { data: rooms } = await supabase.from("rooms").select("id").eq("listing_id", listingId);
     const { data: recs } = await supabase
@@ -37,22 +37,16 @@ Deno.serve(async (req) => {
 
     if (recs && recs.length > 0) {
       try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-          body: JSON.stringify({
-            model: MODEL,
-            max_tokens: 4000,
-            system:
-              "Je analist çmimesh për hotele në Kosovë. Për çdo rekomandim shkruaj NJË fjali shqip (maks. 160 karaktere) që shpjegon pse çmimi sugjerohet më i lartë ose më i ulët, " +
-              "duke përdorur VETËM faktorët e dhënë (occupancy = zëna në dritaren 14-ditore, lead_days = ditë deri në qëndrim, demand_multiplier). Mos ndrysho numrat dhe mos shpik faktorë. " +
-              'Kthe vetëm JSON: [{"id":"...","explanation":"..."}].',
-            messages: [{ role: "user", content: JSON.stringify(recs) }],
-          }),
+        const res = await callLlm({
+          maxTokens: 4000,
+          system:
+            "Je analist çmimesh për hotele në Kosovë. Për çdo rekomandim shkruaj NJË fjali shqip (maks. 160 karaktere) që shpjegon pse çmimi sugjerohet më i lartë ose më i ulët, " +
+            "duke përdorur VETËM faktorët e dhënë (occupancy = zëna në dritaren 14-ditore, lead_days = ditë deri në qëndrim, demand_multiplier). Mos ndrysho numrat dhe mos shpik faktorë. " +
+            'Kthe vetëm JSON: [{"id":"...","explanation":"..."}].',
+          messages: [{ role: "user", content: JSON.stringify(recs) }],
         });
         if (res.ok) {
-          const out = await res.json();
-          const text: string = out.content?.find((b: { type: string }) => b.type === "text")?.text ?? "[]";
+          const text: string = res.content.find((b: { type: string }) => b.type === "text")?.text ?? "[]";
           const parsed = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim());
           const valid = new Set(recs.map((r) => r.id));
           for (const item of Array.isArray(parsed) ? parsed : []) {
@@ -63,7 +57,7 @@ Deno.serve(async (req) => {
             }
           }
         } else {
-          console.error("Anthropic error", res.status, await res.text());
+          console.error("LLM error", res.status, res.error);
         }
       } catch (e) {
         console.error("Explain failed", (e as Error).message); // shpjegimi standard mbetet

@@ -4,8 +4,8 @@
 // Sekretet: ANTHROPIC_API_KEY (i detyrueshëm), ANTHROPIC_MODEL (opsional).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json, UUID_RE, DATE_RE } from "../_shared/cors.ts";
+import { callLlm, llmMissingMessage, llmProvider } from "../_shared/llm.ts";
 
-const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-haiku-5-5";
 const MAX_ROUNDS = 8;
 const MAX_NIGHTS = 21;
 // deno-lint-ignore no-explicit-any
@@ -69,8 +69,7 @@ const nights = (a: string, b: string) => Math.round((Date.parse(b + "T00:00:00Z"
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Metodë e palejuar" }, 405);
-  const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
-  if (!apiKey) return json({ error: "Planifikuesi nuk është konfiguruar (mungon ANTHROPIC_API_KEY)." }, 503);
+  if (!llmProvider()) return json({ error: llmMissingMessage }, 503);
 
   let body: Json;
   try { body = await req.json(); } catch { return json({ error: "JSON i pavlefshëm" }, 400); }
@@ -133,16 +132,11 @@ Deno.serve(async (req) => {
   let submitted: Json = null;
 
   for (let round = 0; round < MAX_ROUNDS && !submitted; round++) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 2048, system, tools: TOOLS, messages: convo }),
-    });
-    if (!res.ok) {
-      console.error("Anthropic error", res.status, await res.text());
+    const data = await callLlm({ system, messages: convo, tools: TOOLS, maxTokens: 2048 });
+    if (!data.ok) {
+      console.error("LLM error", data.status, data.error);
       return json({ error: "Planifikuesi nuk është i disponueshëm për momentin." }, 502);
     }
-    const data = await res.json();
     const uses = (data.content as Json[]).filter((b) => b.type === "tool_use");
     if (uses.length === 0) {
       convo.push({ role: "assistant", content: data.content });

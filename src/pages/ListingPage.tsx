@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { BookingWidget } from "@/components/BookingWidget";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { MobileNav } from "@/components/MobileNav";
+import { PriceInsight } from "@/components/PriceInsight";
 import { LeafletMap } from "@/components/LeafletMap";
 import { SEOHead, createProductSchema, createBreadcrumbSchema } from "@/components/SEOHead";
 
@@ -233,6 +234,8 @@ const ListingPage = () => {
                 </ul>
               </section>
             )}
+
+            <section className="py-6"><PriceInsight id={listing.id} type={listing.type} price={Number(listing.price)} /></section>
 
             {/* Map */}
             {(listing as any).lat && (listing as any).lng && (
