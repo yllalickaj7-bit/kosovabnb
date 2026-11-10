@@ -23,7 +23,7 @@ export const LeafletMap = ({ lat, lng, title }: LeafletMapProps) => {
     }).addTo(map);
 
     const icon = L.divIcon({
-      html: `<div style="background: linear-gradient(to right, #E61E4D, #D70466); width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+      html: `<div style="background: linear-gradient(to right, #2D5BE3, #12297A); width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
       className: "",
       iconSize: [32, 32],
       iconAnchor: [16, 32],

@@ -133,8 +133,8 @@ const RevenueManagerPage = () => {
                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Legend />
-                    <Area dataKey="band" name="Interval 90%" stroke="none" fill="#E61E4D" fillOpacity={0.15} />
-                    <Line dataKey="forecast" name="Parashikim" stroke="#E61E4D" strokeWidth={2} dot={false} />
+                    <Area dataKey="band" name="Interval 90%" stroke="none" fill="#2D5BE3" fillOpacity={0.15} />
+                    <Line dataKey="forecast" name="Parashikim" stroke="#2D5BE3" strokeWidth={2} dot={false} />
                     <Line dataKey="otb" name="E rezervuar" stroke="#3b82f6" strokeWidth={2} dot={false} />
                   </ComposedChart>
                 </ResponsiveContainer>

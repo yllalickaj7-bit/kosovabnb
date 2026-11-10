@@ -75,9 +75,9 @@ export const Header = ({ onSearch }: HeaderProps) => {
                 <path d="M16 1C8.82 1 3 6.82 3 14c0 3.5 1.35 6.68 3.56 9.06L16 31l9.44-7.94C27.65 20.68 29 17.5 29 14c0-7.18-5.82-13-13-13z" fill="url(#brandGrad)" />
                 <defs>
                   <linearGradient id="brandGrad" x1="3" y1="1" x2="29" y2="31">
-                    <stop stopColor="#E61E4D" />
-                    <stop offset="0.5" stopColor="#E31C5F" />
-                    <stop offset="1" stopColor="#D70466" />
+                    <stop stopColor="#2D5BE3" />
+                    <stop offset="0.5" stopColor="#1B3FB5" />
+                    <stop offset="1" stopColor="#12297A" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -111,6 +111,12 @@ export const Header = ({ onSearch }: HeaderProps) => {
 
           {/* Right Nav */}
           <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => navigate("/planner")}
+              className="hidden lg:flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-semibold text-white gradient-brand hover:opacity-90 transition-opacity"
+            >
+              ✨ Planifikues AI
+            </button>
             <button
               onClick={() => navigate("/become-host")}
               className="hidden md:flex items-center h-10 px-4 rounded-full text-sm font-medium text-foreground hover:bg-secondary transition-colors"
@@ -157,6 +163,10 @@ export const Header = ({ onSearch }: HeaderProps) => {
                     transition={{ duration: 0.15 }}
                     className="absolute right-0 top-14 w-56 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50"
                   >
+                    <button onClick={() => { navigate("/planner"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">✨ Planifikuesi i udhëtimit (AI)</button>
+                    <button onClick={() => { navigate("/simulator"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">📈 Simulatori i çmimeve</button>
+                    <button onClick={() => { navigate("/host/revenue"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">💶 Revenue Manager</button>
+                    <div className="border-t border-border" />
                     {user ? (
                       <>
                         <div className="px-4 py-3 border-b border-border">

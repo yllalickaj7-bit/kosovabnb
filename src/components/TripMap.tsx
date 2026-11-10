@@ -22,7 +22,7 @@ export const TripMap = ({ stops }: { stops: TripStop[] }) => {
     const points: L.LatLngTuple[] = stops.map((s) => [s.lat, s.lng]);
     stops.forEach((s, i) => {
       const icon = L.divIcon({
-        html: `<div style="background:linear-gradient(to right,#E61E4D,#D70466);color:#fff;width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">${i + 1}</div>`,
+        html: `<div style="background:linear-gradient(to right,#2D5BE3,#12297A);color:#fff;width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">${i + 1}</div>`,
         className: "",
         iconSize: [30, 30],
         iconAnchor: [15, 15],
@@ -31,7 +31,7 @@ export const TripMap = ({ stops }: { stops: TripStop[] }) => {
       el.textContent = s.title; // textContent: asnjë HTML nga përmbajtja e AI
       L.marker([s.lat, s.lng], { icon }).addTo(map).bindPopup(el);
     });
-    if (points.length > 1) L.polyline(points, { color: "#E61E4D", weight: 3, dashArray: "6 8" }).addTo(map);
+    if (points.length > 1) L.polyline(points, { color: "#2D5BE3", weight: 3, dashArray: "6 8" }).addTo(map);
     map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 12 });
     return () => {
       map.remove();

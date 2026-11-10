@@ -269,7 +269,7 @@ export const BookingWidget = ({ listingId, price, rating, listingTitle, location
         onClick={handleReserve}
         disabled={submitting || noRooms || (datesReady && availability.isLoading)}
         className="w-full py-4 rounded-xl font-semibold text-white text-base transition-opacity hover:opacity-90 active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
-        style={{ background: "linear-gradient(to right, #E61E4D 0%, #E31C5F 50%, #D70466 100%)" }}
+        style={{ background: "linear-gradient(to right, #2D5BE3 0%, #1B3FB5 50%, #12297A 100%)" }}
       >
         {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
         {user ? "Rezervo" : "Hyr për të rezervuar"}
