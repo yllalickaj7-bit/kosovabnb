@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import { corsHeaders, json, UUID_RE, DATE_RE } from "./_shared/cors";
 import { callLlm, llmMissingMessage, llmProvider } from "./_shared/llm";
 
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://kosovabnb.vercel.app";
+const SITE_URL = Deno.env.get("SITE_URL") ?? "https://kosovabnb-yll3.vercel.app";
 const MAX_MESSAGES = 20;
 const MAX_CHARS = 2000;
 const MAX_TOOL_ROUNDS = 5;
