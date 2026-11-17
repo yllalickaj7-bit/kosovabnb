@@ -2,7 +2,7 @@ sequenceDiagram
   actor G as Mysafiri
   participant W as ChatWidget
   participant F as Edge Function chat
-  participant C as Claude API
+  participant C as Groq API (LLM)
   participant DB as Supabase (RPC, JWT i përdoruesit)
   G->>W: "Vilë në Prizren për 6, 20-23 korrik"
   W->>F: mesazhet + JWT
