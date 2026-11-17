@@ -1,3 +1,5 @@
+import { SITE } from "@/lib/site";
+import { callFn } from "@/lib/ai-api";
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -106,7 +108,7 @@ const HostDashboardPage = () => {
   const generate = useMutation({
     mutationFn: async () => {
       // Funksioni "price-recommend" (Edge Function) shton shpjegim me AI; nëse nuk është i vendosur, përdorim SQL direkt.
-      const { error: fnError } = await supabase.functions.invoke("price-recommend", { body: { listing_id: activeListing } });
+      const { error: fnError } = await callFn("price-recommend", { body: { listing_id: activeListing } });
       if (fnError) {
         const { error } = await supabase.rpc("generate_price_recommendations", { _listing_id: activeListing!, _days: 30 });
         if (error) throw error;
@@ -180,7 +182,7 @@ const HostDashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Paneli i host-it | KosovaBnB" description="Menaxhoni pronat, rezervimet dhe çmimet." canonical="https://kosovabnb.lovable.app/host" noindex />
+      <SEOHead title="Paneli i host-it | KosovaBnB" description="Menaxhoni pronat, rezervimet dhe çmimet." canonical={`${SITE}/host`} noindex />
       <Header />
       <main className="max-w-5xl mx-auto px-6 pt-28 pb-28 space-y-8">
         <h1 className="text-2xl md:text-3xl font-bold">Paneli i host-it</h1>

@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useEffect } from "react";
 
 interface SEOHeadProps {
@@ -14,7 +15,7 @@ export const SEOHead = ({
   title,
   description,
   canonical,
-  ogImage = "https://kosovabnb.lovable.app/og-image.jpg",
+  ogImage = `${SITE}/og-image.jpg`,
   ogType = "website",
   jsonLd,
   noindex = false,
@@ -93,8 +94,8 @@ export const createOrganizationSchema = () => ({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "KosovaBnB",
-  url: "https://kosovabnb.lovable.app",
-  logo: "https://kosovabnb.lovable.app/favicon.ico",
+  url: `${SITE}`,
+  logo: `${SITE}/favicon.ico`,
   description: "Platforma kryesore për rezervimin e vendbanimeve, eksperiencave dhe shërbimeve në Kosovë.",
   address: {
     "@type": "PostalAddress",
@@ -108,12 +109,12 @@ export const createWebSiteSchema = () => ({
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "KosovaBnB",
-  url: "https://kosovabnb.lovable.app",
+  url: `${SITE}`,
   potentialAction: {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: "https://kosovabnb.lovable.app/?search={search_term_string}",
+      urlTemplate: `${SITE}/?search={search_term_string}`,
     },
     "query-input": "required name=search_term_string",
   },
@@ -134,7 +135,7 @@ export const createLocalBusinessSchema = () => ({
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "KosovaBnB",
-  url: "https://kosovabnb.lovable.app",
+  url: `${SITE}`,
   description: "Platforma për vendbanime, eksperienca dhe shërbime turistike në Kosovë.",
   address: {
     "@type": "PostalAddress",
@@ -163,7 +164,7 @@ export const createProductSchema = (listing: {
   name: listing.title,
   description: listing.description || `Vendbanim në ${listing.location}`,
   image: listing.images_url?.[0],
-  url: `https://kosovabnb.lovable.app/listing/${listing.id}`,
+  url: `${SITE}/listing/${listing.id}`,
   offers: {
     "@type": "Offer",
     price: listing.price,

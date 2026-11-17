@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -46,7 +47,7 @@ const AuthPage = () => {
       <SEOHead
         title={isLogin ? "Hyr në llogari | KosovaBnB" : "Krijo llogari | KosovaBnB"}
         description="Hyr në llogarinë tënde ose krijo një llogari të re në KosovaBnB për të rezervuar vendbanime në Kosovë."
-        canonical="https://kosovabnb.lovable.app/auth"
+        canonical={`${SITE}/auth`}
         noindex
       />
       <main className="w-full max-w-md">

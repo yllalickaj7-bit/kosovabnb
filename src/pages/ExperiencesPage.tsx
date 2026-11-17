@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { Header } from "@/components/Header";
 import { MobileNav } from "@/components/MobileNav";
 import { ListingRow } from "@/components/ListingRow";
@@ -97,8 +98,8 @@ const ExperiencesPage = () => {
   const { t } = useLanguage();
 
   const breadcrumbs = [
-    { name: "KosovaBnB", url: "https://kosovabnb.lovable.app/" },
-    { name: "Eksperienca", url: "https://kosovabnb.lovable.app/experiences" },
+    { name: "KosovaBnB", url: `${SITE}/` },
+    { name: "Eksperienca", url: `${SITE}/experiences` },
   ];
 
   return (
@@ -106,7 +107,7 @@ const ExperiencesPage = () => {
       <SEOHead
         title="Eksperienca në Kosovë – Aktivitete Unike | KosovaBnB"
         description="Zbulo eksperienca unike në Kosovë: hiking, kuzhinë tradicionale, wine tasting, tura kulturore dhe më shumë. Rezervo tani në KosovaBnB."
-        canonical="https://kosovabnb.lovable.app/experiences"
+        canonical={`${SITE}/experiences`}
         jsonLd={createBreadcrumbSchema(breadcrumbs)}
       />
       <Header />

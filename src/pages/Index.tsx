@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,7 +60,7 @@ const Index = () => {
       <SEOHead
         title={pageTitle}
         description={pageDesc}
-        canonical={`https://kosovabnb.lovable.app/${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`}
+        canonical={`${SITE}/${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`}
         jsonLd={[createOrganizationSchema(), createWebSiteSchema(), createLocalBusinessSchema()]}
       />
       <Header onSearch={setSearchQuery} />

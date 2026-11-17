@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -64,9 +65,9 @@ const ListingPage = () => {
   const images = listing.images_url || [];
 
   const breadcrumbs = [
-    { name: "KosovaBnB", url: "https://kosovabnb.lovable.app/" },
-    { name: listing.location.split(",")[0].trim(), url: `https://kosovabnb.lovable.app/?search=${encodeURIComponent(listing.location.split(",")[0].trim())}` },
-    { name: listing.title, url: `https://kosovabnb.lovable.app/listing/${listing.id}` },
+    { name: "KosovaBnB", url: `${SITE}/` },
+    { name: listing.location.split(",")[0].trim(), url: `${SITE}/?search=${encodeURIComponent(listing.location.split(",")[0].trim())}` },
+    { name: listing.title, url: `${SITE}/listing/${listing.id}` },
   ];
 
   return (
@@ -74,7 +75,7 @@ const ListingPage = () => {
       <SEOHead
         title={`${listing.title} – ${listing.location} | KosovaBnB`}
         description={listing.description || `${listing.title} në ${listing.location}. ${listing.bedrooms} dhoma gjumi, ${listing.bathrooms} banjo, deri në ${listing.guests} mysafirë. Çmimi: €${listing.price}/natë.`}
-        canonical={`https://kosovabnb.lovable.app/listing/${listing.id}`}
+        canonical={`${SITE}/listing/${listing.id}`}
         ogImage={images[0]}
         ogType="product"
         jsonLd={[createProductSchema(listing), createBreadcrumbSchema(breadcrumbs)]}
