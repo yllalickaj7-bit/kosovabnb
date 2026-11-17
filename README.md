@@ -17,3 +17,9 @@ npm test                     # teste njësie (Vitest)
 
 ## Baza dhe AI
 Shih `docs/PLANI_DHE_IDETE.md` (migrimet, funksionet `chat`, `trip-planner`, `price-recommend`, secret-et `OPENAI_API_KEY` ose `ANTHROPIC_API_KEY`).
+
+## AI në Vercel (pa Supabase Edge Functions)
+
+Funksionet `api/chat.ts`, `api/trip-planner.ts`, `api/price-recommend.ts` punojnë si Vercel Functions
+(gjenerohen nga `supabase/functions` me `node scripts/gen-api.mjs`). Te Vercel → Settings → Environment Variables
+shto vetëm: `GROQ_API_KEY` (falas nga console.groq.com). Çelësat e Supabase merren nga `VITE_SUPABASE_*` që janë aty.

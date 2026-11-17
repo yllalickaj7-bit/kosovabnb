@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Loader2, Play } from "lucide-react";
@@ -56,7 +57,7 @@ const SimulatorPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Simulatori i çmimeve me AI | KosovaBnB" description="Simulim Monte Carlo i një viti hoteli: çmim fiks kundrejt çmimit dinamik." canonical="https://kosovabnb.lovable.app/simulator" noindex />
+      <SEOHead title="Simulatori i çmimeve me AI | KosovaBnB" description="Simulim Monte Carlo i një viti hoteli: çmim fiks kundrejt çmimit dinamik." canonical={`${SITE}/simulator`} noindex />
       <Header />
       <main className="max-w-5xl mx-auto px-6 pt-28 pb-28 space-y-8">
         <header className="space-y-2">

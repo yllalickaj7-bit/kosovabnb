@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -90,7 +91,7 @@ const RevenueManagerPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Revenue Manager | KosovaBnB" description="Parashikim zënieje dhe të ardhurash për 90 ditët e ardhshme." canonical="https://kosovabnb.lovable.app/host/revenue" noindex />
+      <SEOHead title="Revenue Manager | KosovaBnB" description="Parashikim zënieje dhe të ardhurash për 90 ditët e ardhshme." canonical={`${SITE}/host/revenue`} noindex />
       <Header />
       <main className="max-w-5xl mx-auto px-6 pt-28 pb-28 space-y-8">
         <header className="space-y-2">

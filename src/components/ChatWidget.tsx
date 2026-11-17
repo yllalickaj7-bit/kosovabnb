@@ -1,3 +1,4 @@
+import { callFn } from "@/lib/ai-api";
 import { useEffect, useRef, useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 import { Bot, Loader2, Send, X } from "lucide-react";
@@ -98,7 +99,7 @@ export const ChatWidget = () => {
     setInput("");
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("chat", {
+      const { data, error } = await callFn("chat", {
         body: {
           messages: next.slice(-20),
           listing_id: listingId,

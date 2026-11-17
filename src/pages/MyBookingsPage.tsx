@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { Link, Navigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
@@ -54,7 +55,7 @@ const MyBookingsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Rezervimet e mia | KosovaBnB" description="Shikoni dhe menaxhoni rezervimet tuaja." canonical="https://kosovabnb.lovable.app/bookings" noindex />
+      <SEOHead title="Rezervimet e mia | KosovaBnB" description="Shikoni dhe menaxhoni rezervimet tuaja." canonical={`${SITE}/bookings`} noindex />
       <Header />
       <main className="max-w-4xl mx-auto px-6 pt-28 pb-28">
         <h1 className="text-2xl md:text-3xl font-bold mb-6">Rezervimet e mia</h1>

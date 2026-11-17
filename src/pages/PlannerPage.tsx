@@ -1,3 +1,5 @@
+import { SITE } from "@/lib/site";
+import { callFn } from "@/lib/ai-api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2, MapPin, Sparkles } from "lucide-react";
@@ -76,7 +78,7 @@ const PlannerPage = () => {
   const generate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError(null); setPlan(null);
-    const { data, error: err } = await supabase.functions.invoke("trip-planner", {
+    const { data, error: err } = await callFn("trip-planner", {
       body: { prompt, guests, nights, start_date: start || undefined, language: lang === "en" ? "en" : "sq" },
     });
     setLoading(false);
@@ -125,7 +127,7 @@ const PlannerPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Planifikuesi i udhëtimit me AI | KosovaBnB" description="Përshkruaj udhëtimin dhe AI ndërton itinerar me prona reale të verifikuara." canonical="https://kosovabnb.lovable.app/planner" noindex />
+      <SEOHead title="Planifikuesi i udhëtimit me AI | KosovaBnB" description="Përshkruaj udhëtimin dhe AI ndërton itinerar me prona reale të verifikuara." canonical={`${SITE}/planner`} noindex />
       <Header />
       <main className="max-w-5xl mx-auto px-6 pt-28 pb-28 space-y-8">
         <header className="space-y-2">

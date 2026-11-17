@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -43,8 +44,8 @@ const BecomeHostPage = () => {
   };
 
   const breadcrumbs = [
-    { name: "KosovaBnB", url: "https://kosovabnb.lovable.app/" },
-    { name: "Bëhu Host", url: "https://kosovabnb.lovable.app/become-host" },
+    { name: "KosovaBnB", url: `${SITE}/` },
+    { name: "Bëhu Host", url: `${SITE}/become-host` },
   ];
 
   return (
@@ -52,7 +53,7 @@ const BecomeHostPage = () => {
       <SEOHead
         title="Bëhu Host – Listo Pronën Tënde | KosovaBnB"
         description="Bëhu host në KosovaBnB dhe ndaj hapësirën tënde me udhëtarë nga e gjithë bota. Fito para shtesë duke listuar pronën tënde në Kosovë."
-        canonical="https://kosovabnb.lovable.app/become-host"
+        canonical={`${SITE}/become-host`}
         jsonLd={createBreadcrumbSchema(breadcrumbs)}
       />
       <main className="max-w-2xl mx-auto px-4 py-8">

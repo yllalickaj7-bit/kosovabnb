@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -65,7 +66,7 @@ const CheckoutPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Pagesa | KosovaBnB" description="Përfundoni rezervimin tuaj." canonical="https://kosovabnb.lovable.app/checkout" noindex />
+      <SEOHead title="Pagesa | KosovaBnB" description="Përfundoni rezervimin tuaj." canonical={`${SITE}/checkout`} noindex />
       <Header />
       <main className="max-w-4xl mx-auto px-6 pt-28 pb-28">
         <h1 className="text-2xl md:text-3xl font-bold mb-6">{confirmed ? "Rezervimi u konfirmua" : "Konfirmo dhe paguaj"}</h1>
