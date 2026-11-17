@@ -1,5 +1,5 @@
 // Adapter për Groq, duke përdorur API-në e përputhshme me OpenAI.
-// Sekreti: GROQ_API_KEY. Modeli opsional: GROQ_MODEL (parazgjedhje llama-3.3-70b-versatile; si rezervë llama-3.1-8b-instant).
+// Sekreti: GROQ_API_KEY. Modeli opsional: GROQ_MODEL (parazgjedhje openai/gpt-oss-120b; rezervë openai/gpt-oss-20b (llama-3.x u mbyllën nga Groq më 16.08.2026)).
 // Brenda funksioneve biseda mbahet në formatin e blloqeve të Anthropic (text/tool_use/tool_result); për OpenAI përkthehet këtu.
 // deno-lint-ignore no-explicit-any
 type Json = any;
@@ -10,7 +10,7 @@ export const llmProvider = (): "groq" | null => Deno.env.get("GROQ_API_KEY") ? "
 const openAiConfig = () => {
   const groq = Deno.env.get("GROQ_API_KEY");
   if (!groq) return null;
-  return { key: groq, base: "https://api.groq.com/openai/v1", models: Array.from(new Set([Deno.env.get("GROQ_MODEL") ?? "llama-3.3-70b-versatile", "llama-3.1-8b-instant"])) };
+  return { key: groq, base: "https://api.groq.com/openai/v1", models: Array.from(new Set([...(Deno.env.get("GROQ_MODEL") ? [Deno.env.get("GROQ_MODEL")] : []), "openai/gpt-oss-120b", "openai/gpt-oss-20b"])) };
 };
 
 export const llmMissingMessage = "Mungon çelësi i AI: vendos GROQ_API_KEY te Lovable Cloud Secrets.";
