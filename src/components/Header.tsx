@@ -5,6 +5,7 @@ import { Search, Globe, Menu, User, X, MapPin, Moon, Sun, LogOut } from "lucide-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsHost } from "@/hooks/useIsHost";
 
 const regions = [
   { name: "Prishtinë", emoji: "🏙️" },
@@ -34,6 +35,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const isHost = useIsHost();
 
   const activeTab: TabType =
     location.pathname === "/experiences" ? "experiences" :
@@ -164,8 +166,6 @@ export const Header = ({ onSearch }: HeaderProps) => {
                     className="absolute right-0 top-14 w-56 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50"
                   >
                     <button onClick={() => { navigate("/planner"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">✨ Planifikuesi i udhëtimit (AI)</button>
-                    <button onClick={() => { navigate("/simulator"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">📈 Simulatori i çmimeve</button>
-                    <button onClick={() => { navigate("/host/revenue"); setMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors">💶 Revenue Manager</button>
                     <div className="border-t border-border" />
                     {user ? (
                       <>
@@ -184,24 +184,28 @@ export const Header = ({ onSearch }: HeaderProps) => {
                         >
                           Paneli i host-it
                         </button>
+{isHost && (
                         <button
                           onClick={() => { navigate("/host/revenue"); setMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
                         >
                           Revenue Manager
                         </button>
+)}
                         <button
                           onClick={() => { navigate("/planner"); setMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
                         >
                           Planifikuesi i udhëtimit
                         </button>
+{isHost && (
                         <button
                           onClick={() => { navigate("/simulator"); setMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"
                         >
                           Simulatori i çmimeve
                         </button>
+)}
                         <button
                           onClick={() => { signOut(); setMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-secondary transition-colors"

@@ -1,6 +1,9 @@
+import { useIsHost } from "@/hooks/useIsHost";
 import { Link } from "react-router-dom";
 
-export const SiteFooter = () => (
+export const SiteFooter = () => {
+  const isHost = useIsHost();
+  return (
   <footer className="mt-16 border-t border-border bg-secondary/50">
     <div className="max-w-[1760px] mx-auto px-6 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
       <div>
@@ -16,8 +19,8 @@ export const SiteFooter = () => (
       <nav aria-label="Mjete AI" className="space-y-2">
         <p className="font-semibold">Mjete me AI</p>
         <Link to="/planner" className="block text-muted-foreground hover:text-foreground">Planifikuesi i udhëtimit</Link>
-        <Link to="/simulator" className="block text-muted-foreground hover:text-foreground">Simulatori i çmimeve</Link>
-        <Link to="/host/revenue" className="block text-muted-foreground hover:text-foreground">Revenue Manager</Link>
+        {isHost && <Link to="/simulator" className="block text-muted-foreground hover:text-foreground">Simulatori i çmimeve</Link>}
+        {isHost && <Link to="/host/revenue" className="block text-muted-foreground hover:text-foreground">Revenue Manager</Link>}
       </nav>
       <nav aria-label="Host" className="space-y-2">
         <p className="font-semibold">Për pronarët</p>
@@ -29,3 +32,4 @@ export const SiteFooter = () => (
     <p className="text-center text-xs text-muted-foreground pb-6">© {new Date().getFullYear()} KosovaBnB · Pagesat janë simulim (mënyrë provë)</p>
   </footer>
 );
+};
