@@ -26,11 +26,11 @@ for (const f of ["cors", "llm"]) fs.writeFileSync(`api/_shared/${f}.ts`, fs.read
 for (const fn of ["chat", "trip-planner", "price-recommend"]) {
   let s = fs.readFileSync(`${src}/${fn}/index.ts`, "utf8");
   s = s.replace('"https://esm.sh/@supabase/supabase-js@2"', '"@supabase/supabase-js"')
-       .replace(/"\.\.\/_shared\/(\w+)\.ts"/g, '"./_shared/$1"')
+       .replace(/"\.\.\/_shared\/(\w+)\.ts"/g, '"./_shared/$1.js"')
        .replace("Deno.serve(async (req) => {", "const handler = async (req: Request) => {")
        .replace(/^(\/\/.*\n)?/, "");
   // pas shtrirjes së handler-it shtohet eksporti
-  s = `import "./_shared/deno-shim";\ndeclare const Deno: any;\n// GJENERUAR nga supabase/functions/${fn}/index.ts me scripts/gen-api.mjs: mos e ndrysho direkt.\n` + s.replace(/\n\}\);\s*$/, "\n};\n") + `\nexport default { fetch: handler };\n`;
+  s = `import "./_shared/deno-shim.js";\ndeclare const Deno: any;\n// GJENERUAR nga supabase/functions/${fn}/index.ts me scripts/gen-api.mjs: mos e ndrysho direkt.\n` + s.replace(/\n\}\);\s*$/, "\n};\n") + `\nexport default {\n  async fetch(req: Request) {\n    try { return await handler(req); } catch (e) {\n      return new Response(JSON.stringify({ error: "Gabim i brendshëm", detail: String((e as Error)?.message ?? e).slice(0, 300) }), { status: 500, headers: { "Content-Type": "application/json" } });\n    }\n  },\n};\n`;
   fs.writeFileSync(`api/${fn}.ts`, s);
 }
 console.log("ok");
