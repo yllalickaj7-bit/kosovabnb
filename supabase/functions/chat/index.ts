@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
     const data = await callLlm({ system, messages: convo, tools: TOOLS, maxTokens: 1024 });
     if (!data.ok) {
       console.error("LLM error", data.status, data.error);
-      return json({ error: "Asistenti nuk është i disponueshëm për momentin. Provoni pas pak." }, 502);
+      return json({ error: "Asistenti nuk është i disponueshëm për momentin. Provoni pas pak.", detail: `AI ${data.status}: ${String(data.error ?? "").slice(0, 300)}` }, 502);
     }
     const text = (data.content as Json[]).filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
     if (data.stop_reason !== "tool_use") { reply = text; break; }
