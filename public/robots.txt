@@ -3,7 +3,7 @@ Allow: /
 Disallow: /admin
 Disallow: /auth
 
-Sitemap: https://kosovabnb.vercel.app/sitemap.xml
+Sitemap: https://kosovabnb-yll3.vercel.app/sitemap.xml
 
 User-agent: Googlebot
 Allow: /
