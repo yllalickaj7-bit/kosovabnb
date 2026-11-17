@@ -117,7 +117,7 @@ export const ChatWidget = () => {
         const ctx = (err as { context?: Response })?.context;
         if (ctx) {
           const body = await ctx.clone().json().catch(() => null);
-          reason = `HTTP ${ctx.status}${body?.error ? `: ${body.error}` : ""}`;
+          reason = `HTTP ${ctx.status}${body?.detail ? `: ${body.detail}` : body?.error ? `: ${body.error}` : ""}`;
         }
       } catch { /* mbetet mesazhi bazë */ }
       // AI/edge function nuk është aktiv: asistenti lokal kërkon direkt te pronat

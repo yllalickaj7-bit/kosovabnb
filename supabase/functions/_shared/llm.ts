@@ -1,5 +1,5 @@
 // Adapter për Groq, duke përdorur API-në e përputhshme me OpenAI.
-// Sekreti: GROQ_API_KEY. Modeli opsional: GROQ_MODEL (llama-3.1-8b-instant).
+// Sekreti: GROQ_API_KEY. Modeli opsional: GROQ_MODEL (parazgjedhje llama-3.3-70b-versatile; si rezervë llama-3.1-8b-instant).
 // Brenda funksioneve biseda mbahet në formatin e blloqeve të Anthropic (text/tool_use/tool_result); për OpenAI përkthehet këtu.
 // deno-lint-ignore no-explicit-any
 type Json = any;
@@ -10,7 +10,7 @@ export const llmProvider = (): "groq" | null => Deno.env.get("GROQ_API_KEY") ? "
 const openAiConfig = () => {
   const groq = Deno.env.get("GROQ_API_KEY");
   if (!groq) return null;
-  return { key: groq, base: "https://api.groq.com/openai/v1", model: Deno.env.get("GROQ_MODEL") ?? "llama-3.1-8b-instant" };
+  return { key: groq, base: "https://api.groq.com/openai/v1", models: Array.from(new Set([Deno.env.get("GROQ_MODEL") ?? "llama-3.3-70b-versatile", "llama-3.1-8b-instant"])) };
 };
 
 export const llmMissingMessage = "Mungon çelësi i AI: vendos GROQ_API_KEY te Lovable Cloud Secrets.";
@@ -44,14 +44,31 @@ export const callLlm = async (opts: { system: string; messages: Json[]; tools?: 
 
   const cfg = openAiConfig();
   if (!cfg) return { ok: false, status: 503, error: llmMissingMessage, content: [], stop_reason: "error" };
-  const body: Json = { model: cfg.model, max_tokens: maxTokens, messages: toOpenAiMessages(opts.system, opts.messages) };
-  if (opts.tools?.length) body.tools = opts.tools.map((t: Json) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
-  const res = await fetch(`${cfg.base}/chat/completions`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${cfg.key}`, "content-type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) return { ok: false, status: res.status, error: await res.text(), content: [], stop_reason: "error" };
+  const base: Json = { max_tokens: maxTokens, messages: toOpenAiMessages(opts.system, opts.messages) };
+  if (opts.tools?.length) base.tools = opts.tools.map((t: Json) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
+  // Provo modelin kryesor, pastaj rezervën; modelet e vegjël herë pas here gjenerojnë thirrje funksioni të pavlefshme (400), prandaj 2 tentativa.
+  let res: Response | null = null;
+  let lastError = "";
+  let lastStatus = 502;
+  outer: for (const model of cfg.models) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        res = await fetch(`${cfg.base}/chat/completions`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${cfg.key}`, "content-type": "application/json" },
+          body: JSON.stringify({ ...base, model }),
+        });
+      } catch (e) {
+        lastError = `rrjeti: ${(e as Error).message}`; lastStatus = 502; res = null; continue;
+      }
+      if (res.ok) break outer;
+      lastStatus = res.status;
+      lastError = `${model}: ${(await res.text()).slice(0, 300)}`;
+      res = null;
+      if (lastStatus === 401 || lastStatus === 403) break outer; // çelës i gabuar: s'ka kuptim të provohet më tej
+    }
+  }
+  if (!res) return { ok: false, status: lastStatus, error: lastError, content: [], stop_reason: "error" };
   const d = await res.json();
   const msg = d.choices?.[0]?.message ?? {};
   const content: Json[] = [];

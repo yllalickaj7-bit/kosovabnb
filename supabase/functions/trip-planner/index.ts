@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     const data = await callLlm({ system, messages: convo, tools: TOOLS, maxTokens: 2048 });
     if (!data.ok) {
       console.error("LLM error", data.status, data.error);
-      return json({ error: "Planifikuesi nuk është i disponueshëm për momentin." }, 502);
+      return json({ error: "Planifikuesi nuk është i disponueshëm për momentin.", detail: `AI ${data.status}: ${String(data.error ?? "").slice(0, 300)}` }, 502);
     }
     const uses = (data.content as Json[]).filter((b) => b.type === "tool_use");
     if (uses.length === 0) {
