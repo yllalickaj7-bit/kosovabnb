@@ -66,30 +66,60 @@ const Index = () => {
       <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
       <main className="max-w-[1760px] mx-auto px-4 sm:px-6 pt-[200px] sm:pt-[144px] pb-24 md:pb-8">
-        {/* AI: hyrja e re e kryefaqes */}
-        <section className="mb-10 rounded-[2rem] p-7 sm:p-12 text-white shadow-xl" style={{ background: "var(--gradient-brand)" }} aria-label="Asistenti AI">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-3 max-w-3xl">Gjej qëndrimin e përsosur në Kosovë, thjesht duke e përshkruar</h1>
-          <p className="opacity-90 mb-4 max-w-2xl">Shkruaj çfarë dëshiron dhe asistenti kërkon, krahason çmimet dhe të çon te rezervimi.</p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const v = (new FormData(e.currentTarget).get("q") as string) ?? "";
-              window.dispatchEvent(new CustomEvent("kbnb:open-chat", { detail: v }));
-            }}
-            className="flex gap-2 max-w-2xl"
-          >
-            <input name="q" maxLength={200} placeholder="p.sh. vilë për 6 vetë në Prizren nën 150€" className="flex-1 rounded-full px-5 py-3 text-foreground bg-white outline-none" />
-            <button className="rounded-full px-6 py-3 font-bold bg-accent text-accent-foreground hover:brightness-95">Pyet AI</button>
-          </form>
-          <div className="flex flex-wrap gap-2 mt-4 text-sm">
-            <Link to="/planner" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">✨ Planifiko udhëtimin me AI</Link>
-            <Link to="/simulator" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">📈 Simulatori i çmimeve</Link>
-            <Link to="/host/revenue" className="rounded-full bg-white/20 hover:bg-white/30 px-4 py-2">💶 Revenue Manager</Link>
+        {/* Hero */}
+        <section className="relative overflow-hidden rounded-[2rem] mb-8 text-white shadow-2xl" aria-label="Asistenti AI"
+          style={{ background: "radial-gradient(1200px 500px at 85% -10%, rgba(232,167,0,.35), transparent 60%), radial-gradient(900px 500px at 0% 110%, rgba(45,91,227,.55), transparent 60%), linear-gradient(135deg,#0F1F5C 0%,#12297A 55%,#1B3FB5 100%)" }}>
+          <div className="absolute inset-0 opacity-[0.07]" aria-hidden="true" style={{ backgroundImage: "linear-gradient(135deg,#fff 25%,transparent 25%,transparent 50%,#fff 50%,#fff 75%,transparent 75%)", backgroundSize: "28px 28px" }} />
+          <div className="relative grid lg:grid-cols-[1.4fr_1fr] gap-8 p-7 sm:p-12 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur px-3 py-1 text-xs font-semibold mb-4">✨ Rezervo me ndihmën e AI</span>
+              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05] mb-4">Kosova, e gjetur <span className="text-accent">në një fjali.</span></h1>
+              <p className="text-white/85 text-lg mb-6 max-w-xl">Shkruaj çfarë kërkon: qytetin, numrin e mysafirëve, buxhetin. Asistenti gjen pronat e lira dhe të çon te rezervimi.</p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const v = (new FormData(e.currentTarget).get("q") as string) ?? "";
+                  window.dispatchEvent(new CustomEvent("kbnb:open-chat", { detail: v }));
+                }}
+                className="flex gap-2 max-w-xl bg-white rounded-full p-1.5 shadow-xl"
+              >
+                <input name="q" maxLength={200} aria-label="Pyet asistentin" placeholder="vilë për 6 vetë në Prizren nën 150€" className="flex-1 min-w-0 rounded-full px-5 py-3 text-foreground bg-transparent outline-none placeholder:text-muted-foreground/70" />
+                <button className="rounded-full px-6 py-3 font-bold bg-accent text-accent-foreground hover:brightness-95 transition">Pyet AI</button>
+              </form>
+              <div className="flex flex-wrap gap-2 mt-5 text-sm">
+                <Link to="/planner" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">✨ Planifiko udhëtimin</Link>
+                <Link to="/simulator" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">📈 Simulatori</Link>
+                <Link to="/host/revenue" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">💶 Revenue Manager</Link>
+              </div>
+            </div>
+            <div className="hidden lg:grid gap-4">
+              {[
+                { k: listings?.length ?? "—", v: "vendbanime të gatshme" },
+                { k: grouped.length || "—", v: "qytete në Kosovë" },
+                { k: "24/7", v: "asistent AI për rezervim" },
+              ].map((x) => (
+                <div key={x.v} className="rounded-2xl bg-white/12 backdrop-blur border border-white/20 px-6 py-4 flex items-baseline gap-3">
+                  <span className="text-4xl font-extrabold">{x.k}</span>
+                  <span className="text-white/80 text-sm">{x.v}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          {listings && listings.length > 0 && (
-            <p className="mt-5 text-sm opacity-90">{listings.length} vendbanime · rezervim i sigurt · pagesë provë pa rrezik</p>
-          )}
         </section>
+
+        {/* Qytetet */}
+        {grouped.length > 1 && !searchQuery && activeCategory === "Të gjitha" && (
+          <section className="mb-10" aria-label="Qytetet">
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+              {grouped.slice(0, 8).map(([city, ls]) => (
+                <button key={city} onClick={() => setSearchQuery(city)} className="snap-start shrink-0 text-left rounded-2xl border border-border bg-card hover:border-primary/40 hover:shadow-lg transition px-5 py-4 min-w-[150px]">
+                  <span className="block font-bold">{city}</span>
+                  <span className="text-xs text-muted-foreground">{ls.length} vendbanime</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Results count */}
         {!isLoading && listings && (
@@ -145,6 +175,41 @@ const Index = () => {
               Pastro filtrat
             </button>
           </div>
+        )}
+
+        {/* Si funksionon + pse ne */}
+        {!searchQuery && activeCategory === "Të gjitha" && (
+          <>
+            <section className="mt-14" aria-label="Si funksionon">
+              <h2 className="text-2xl sm:text-3xl font-extrabold mb-6">Si funksionon</h2>
+              <div className="grid gap-4 md:grid-cols-3">
+                {[
+                  ["1", "Përshkruaj ose kërko", "Shkruaj te asistenti ose përdor filtrat: qytet, lloj, çmim, mysafirë."],
+                  ["2", "Shiko çmimin real", "Disponueshmëria dhe totali llogariten nga sistemi, jo nga hamendja."],
+                  ["3", "Rezervo dhe paguaj", "Konfirmim brenda disa klikimeve; pagesa është provë, pa rrezik."],
+                ].map(([n, t, d]) => (
+                  <div key={n} className="rounded-3xl border border-border bg-card p-6 hover:shadow-lg transition">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full gradient-brand text-white font-bold mb-4">{n}</span>
+                    <h3 className="font-bold text-lg mb-1">{t}</h3>
+                    <p className="text-muted-foreground text-sm">{d}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+            <section className="mt-12 rounded-3xl bg-secondary/70 p-6 sm:p-10 grid gap-6 md:grid-cols-3" aria-label="Pse KosovaBnB">
+              {[
+                ["🤖", "Asistent që punon", "Kërkon pronat e lira dhe jep lidhje direkte; nuk shpik çmime."],
+                ["🔒", "Rezervim pa dyfishim", "Baza e të dhënave nuk lejon dy rezervime në të njëjtat data."],
+                ["📊", "Çmim i drejtë", "Çdo pronë tregon si krahasohet çmimi dhe kur është më lirë."],
+              ].map(([i, t, d]) => (
+                <div key={t as string}>
+                  <div className="text-3xl mb-2" aria-hidden="true">{i}</div>
+                  <h3 className="font-bold mb-1">{t}</h3>
+                  <p className="text-sm text-muted-foreground">{d}</p>
+                </div>
+              ))}
+            </section>
+          </>
         )}
       </main>
 
