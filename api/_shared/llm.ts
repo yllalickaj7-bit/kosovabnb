@@ -13,7 +13,7 @@ const openAiConfig = () => {
   return { key: groq, base: "https://api.groq.com/openai/v1", models: Array.from(new Set([...(Deno.env.get("GROQ_MODEL") ? [Deno.env.get("GROQ_MODEL")] : []), "openai/gpt-oss-120b", "openai/gpt-oss-20b"])) };
 };
 
-export const llmMissingMessage = "Mungon çelësi i AI: vendos GROQ_API_KEY te Lovable Cloud Secrets.";
+export const llmMissingMessage = "Mungon çelësi i AI: vendos GROQ_API_KEY te Vercel (Environment Variables).";
 
 export interface LlmResult { ok: boolean; status: number; error?: string; content: Json[]; stop_reason: string }
 
