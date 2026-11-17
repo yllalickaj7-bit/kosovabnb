@@ -36,7 +36,7 @@ def table(s, rows, x, y, w, colw, size=16):
 s = p.slides.add_slide(blank)
 tb(s, 0.8, 2.0, 11.5, 1.2, "KosovaBNB", 54, True, RED)
 tb(s, 0.8, 3.1, 11.5, 1.0, "Sistem Inteligjent për Menaxhimin e Hotelit", 34, True, NAVY)
-tb(s, 0.8, 4.3, 11.5, 1.5, ["AI chatbot · rekomandim çmimi · rezervim · pagesë e simuluar", "Inxhinieri Softuerike · Prishtinë 2026/2027", "Mentor: Assoc. Prof. Dr. Engin Melekoğlu · Student: [Emri Mbiemri]"], 20, False, GREY)
+tb(s, 0.8, 4.3, 11.5, 1.5, ["AI chatbot · rekomandim çmimi · rezervim · pagesë e simuluar", "Inxhinieri Softuerike · Prishtinë 2026/2027", "Mentor: Assoc. Prof. Dr. Engin Melekoğlu · Student: Yll Alickaj"], 20, False, GREY)
 slide("Problemi", ["Pronarët e vegjël çmojnë 'me ndjesi': humbin të ardhura në sezon, mbeten bosh jashtë sezonit", "Mysafirët humbin kohë duke krahasuar dhe kontrolluar disponueshmërinë", "Dyfishimi i rezervimeve dhe pagesat e pasigurta janë rreziqe reale", "Pyetja jonë: a mund të ndihmojë AI pa shpikur të dhëna dhe a mund ta provojmë?"])
 slide("Çfarë ndërtuam", ["Rezervim me kontroll disponueshmërie dhe çmim nga serveri", "Pagesë e simuluar (karta provë)", "Chatbot AI që kërkon, kontrollon dhe rezervon", "Rekomandim çmimi i shpjegueshëm për host-in", "Simulator, Revenue Manager dhe planifikues udhëtimi me AI"], notes="Tre të fundit shkojnë përtej kërkesës minimale të lëndës.")
 slide("Arkitektura", ["React + Supabase (PostgreSQL, Auth, RLS)", "Rregullat e biznesit në funksione SQL", "Edge Functions me Claude API; çelësi vetëm në server", "Çmimi dhe disponueshmëria nuk vijnë kurrë nga klienti"], img=f"{ROOT}/diagrams/arch.png")

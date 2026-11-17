@@ -23,7 +23,7 @@ class Doc:
         c(subtitle, 16, False, 24)
         c(TITLE, 20, True, 80, NAVY)
         c("Mentor: Assoc. Prof. Dr. Engin Melekoğlu", 12, False, 6)
-        c("Student: [Emri Mbiemri]", 12, False, 80)
+        c("Student: Yll Alickaj", 12, False, 80)
         c("Prishtinë, 2026/2027", 12, True, 0)
         d.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
