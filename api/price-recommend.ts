@@ -1,11 +1,11 @@
-import "./_shared/deno-shim";
+import "./_shared/deno-shim.js";
 declare const Deno: any;
 // GJENERUAR nga supabase/functions/price-recommend/index.ts me scripts/gen-api.mjs: mos e ndrysho direkt.
 // Numrat NUK i ndryshon AI-ja: vetëm teksti i shpjegimit. Sekretet: ANTHROPIC_API_KEY (opsional), ANTHROPIC_MODEL (opsional).
 import { createClient } from "@supabase/supabase-js";
-import { corsHeaders, json, UUID_RE } from "./_shared/cors";
+import { corsHeaders, json, UUID_RE } from "./_shared/cors.js";
 
-import { callLlm, llmProvider } from "./_shared/llm";
+import { callLlm, llmProvider } from "./_shared/llm.js";
 
 const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -70,4 +70,10 @@ const handler = async (req: Request) => {
   return json({ generated, explained });
 };
 
-export default { fetch: handler };
+export default {
+  async fetch(req: Request) {
+    try { return await handler(req); } catch (e) {
+      return new Response(JSON.stringify({ error: "Gabim i brendshëm", detail: String((e as Error)?.message ?? e).slice(0, 300) }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
+  },
+};

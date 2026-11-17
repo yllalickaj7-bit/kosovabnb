@@ -1,12 +1,12 @@
-import "./_shared/deno-shim";
+import "./_shared/deno-shim.js";
 declare const Deno: any;
 // GJENERUAR nga supabase/functions/trip-planner/index.ts me scripts/gen-api.mjs: mos e ndrysho direkt.
 // Pjesa kyçe e besueshmërisë: modeli vetëm PROPOZON qëndrime (submit_itinerary); serveri i rivlerëson ato
 // (pronë ekzistuese, datat në radhë, disponueshmëri, çmim nga quote_stay) dhe hedh poshtë çdo gjë që nuk kalon.
 // Sekretet: ANTHROPIC_API_KEY (i detyrueshëm), ANTHROPIC_MODEL (opsional).
 import { createClient } from "@supabase/supabase-js";
-import { corsHeaders, json, UUID_RE, DATE_RE } from "./_shared/cors";
-import { callLlm, llmMissingMessage, llmProvider } from "./_shared/llm";
+import { corsHeaders, json, UUID_RE, DATE_RE } from "./_shared/cors.js";
+import { callLlm, llmMissingMessage, llmProvider } from "./_shared/llm.js";
 
 const MAX_ROUNDS = 8;
 const MAX_NIGHTS = 21;
@@ -199,4 +199,10 @@ const handler = async (req: Request) => {
   });
 };
 
-export default { fetch: handler };
+export default {
+  async fetch(req: Request) {
+    try { return await handler(req); } catch (e) {
+      return new Response(JSON.stringify({ error: "Gabim i brendshëm", detail: String((e as Error)?.message ?? e).slice(0, 300) }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
+  },
+};

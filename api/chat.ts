@@ -1,10 +1,10 @@
-import "./_shared/deno-shim";
+import "./_shared/deno-shim.js";
 declare const Deno: any;
 // GJENERUAR nga supabase/functions/chat/index.ts me scripts/gen-api.mjs: mos e ndrysho direkt.
 // Sekretet (Supabase → Edge Functions → Secrets): ANTHROPIC_API_KEY (i detyrueshëm), ANTHROPIC_MODEL (opsional), SITE_URL (opsional).
 import { createClient } from "@supabase/supabase-js";
-import { corsHeaders, json, UUID_RE, DATE_RE } from "./_shared/cors";
-import { callLlm, llmMissingMessage, llmProvider } from "./_shared/llm";
+import { corsHeaders, json, UUID_RE, DATE_RE } from "./_shared/cors.js";
+import { callLlm, llmMissingMessage, llmProvider } from "./_shared/llm.js";
 
 const SITE_URL = Deno.env.get("SITE_URL") ?? "https://kosovabnb-yll3.vercel.app";
 const MAX_MESSAGES = 20;
@@ -207,4 +207,10 @@ const handler = async (req: Request) => {
   return json({ reply, conversation_id: conversationId });
 };
 
-export default { fetch: handler };
+export default {
+  async fetch(req: Request) {
+    try { return await handler(req); } catch (e) {
+      return new Response(JSON.stringify({ error: "Gabim i brendshëm", detail: String((e as Error)?.message ?? e).slice(0, 300) }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
+  },
+};
