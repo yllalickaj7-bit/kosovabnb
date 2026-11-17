@@ -3,7 +3,7 @@ sequenceDiagram
   participant UI as Paneli i host-it
   participant F as Edge Function price-recommend
   participant DB as Supabase (RPC)
-  participant C as Claude API
+  participant C as Groq API (LLM)
   H->>UI: "Gjenero për 30 ditët"
   UI->>F: listing_id + JWT
   F->>DB: rpc generate_price_recommendations

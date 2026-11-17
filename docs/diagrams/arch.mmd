@@ -5,7 +5,7 @@ flowchart LR
   API --> PG[(PostgreSQL<br/>RLS + funksione SQL)]
   EF1 -->|JWT i përdoruesit| PG
   EF2 -->|JWT i përdoruesit| PG
-  EF1 --> CL[Claude API]
+  EF1 --> CL[Groq API (LLM)]
   EF2 --> CL
   U --> AUTH[Supabase Auth]
   AUTH --> PG
