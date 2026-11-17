@@ -11,11 +11,13 @@ import { MobileNav } from "@/components/MobileNav";
 import { SEOHead, createOrganizationSchema, createWebSiteSchema, createLocalBusinessSchema } from "@/components/SEOHead";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useIsHost } from "@/hooks/useIsHost";
 
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryType>("Të gjitha");
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useLanguage();
+  const isHost = useIsHost();
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ["listings", activeCategory, searchQuery],
@@ -74,7 +76,7 @@ const Index = () => {
           <div className="relative grid lg:grid-cols-[1.4fr_1fr] gap-8 p-7 sm:p-12 items-center">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur px-3 py-1 text-xs font-semibold mb-4">✨ Rezervo me ndihmën e AI</span>
-              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05] mb-4">Kosova, e gjetur <span className="text-accent">në një fjali.</span></h1>
+              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05] mb-4">Akomodohu <span className="text-accent">në pak sekonda!</span></h1>
               <p className="text-white/85 text-lg mb-6 max-w-xl">Shkruaj çfarë kërkon: qytetin, numrin e mysafirëve, buxhetin. Asistenti gjen pronat e lira dhe të çon te rezervimi.</p>
               <form
                 onSubmit={(e) => {
@@ -89,8 +91,8 @@ const Index = () => {
               </form>
               <div className="flex flex-wrap gap-2 mt-5 text-sm">
                 <Link to="/planner" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">✨ Planifiko udhëtimin</Link>
-                <Link to="/simulator" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">📈 Simulatori</Link>
-                <Link to="/host/revenue" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">💶 Revenue Manager</Link>
+                {isHost && <Link to="/simulator" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">📈 Simulatori</Link>}
+                {isHost && <Link to="/host/revenue" className="rounded-full bg-white/15 hover:bg-white/25 backdrop-blur px-4 py-2 transition">💶 Revenue Manager</Link>}
               </div>
             </div>
             <div className="hidden lg:grid gap-4">
